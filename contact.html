@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>문의하기 | 청솔행정사사무소</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;color:#1a1a2e;background:#fff;overflow-x:hidden}a{text-decoration:none;color:inherit}ul,ol{list-style:none}img{max-width:100%;height:auto;display:block}
+    #header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.08)}.header-inner{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 20px;max-width:1200px;margin:0 auto}
+    .logo{display:flex;align-items:center;gap:10px}.logo-icon{width:38px;height:38px;background:#1a3a5c;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0}.logo-name{font-size:1rem;font-weight:700;color:#1a3a5c}.logo-sub{font-size:.68rem;color:#718096}
+    .main-nav{display:none}.header-cta{display:none}.nav-toggle{display:flex;flex-direction:column;gap:5px;padding:8px;cursor:pointer;border:none;background:none}.nav-toggle span{display:block;width:22px;height:2px;background:#1a3a5c;border-radius:2px}
+    /* mobile-menu 스타일은 style.css 드로어 스타일로 통합 */
+    .container{width:100%;max-width:1200px;margin:0 auto;padding:0 20px}.section{padding:60px 0}.section-header{text-align:center;margin-bottom:40px}.section-header h2{color:#1a3a5c;margin-bottom:12px;font-size:clamp(1.3rem,3vw,2rem);font-weight:700}.section-line{width:48px;height:4px;background:#e85d2a;border-radius:2px;margin:12px auto 0}
+    .page-hero{background:linear-gradient(135deg,#0f2540,#1a3a5c);padding:100px 20px 50px;text-align:center;color:#fff;margin-top:64px}.page-hero h1{color:#fff;font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:10px}.page-hero p{color:rgba(255,255,255,.8);font-size:.95rem}
+    @media(min-width:900px){.main-nav{display:block}.header-cta{display:flex;background:#e85d2a;color:#fff;padding:8px 18px;border-radius:6px;font-size:.85rem;font-weight:600;align-items:center;gap:6px}.nav-toggle{display:none}}
+    .contact-layout { display: grid; grid-template-columns: 1fr; gap: 28px; }
+    @media(min-width:900px){ .contact-layout { grid-template-columns: 1fr 340px; align-items: start; } }
+    .contact-info-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; margin-bottom: 16px; }
+    .contact-info-card h4 { color: var(--primary); margin-bottom: 14px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+    .contact-detail-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--bg-light); font-size: 0.88rem; }
+    .contact-detail-item:last-child { border-bottom: none; }
+    .contact-detail-icon { width: 34px; height: 34px; border-radius: var(--radius-sm); background: var(--bg-light); display: flex; align-items: center; justify-content: center; color: var(--primary); flex-shrink: 0; }
+    .contact-detail-text strong { display: block; color: var(--text-dark); font-weight: 600; margin-bottom: 2px; }
+    .contact-detail-text span { color: var(--text-light); font-size: 0.83rem; }
+    .map-placeholder { background: var(--bg-light); border: 1px solid var(--border); border-radius: var(--radius-md); height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-light); font-size: 0.88rem; flex-direction: column; gap: 8px; }
+    a.map-placeholder:hover { background: #EBF8FF; border-color: var(--primary-light); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a3a5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="청솔행정사">
+</head>
+<body>
+<header id="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><i class="fas fa-balance-scale"></i></div><div class="logo-text"><div class="logo-name">청솔행정사사무소</div><div class="logo-sub">기업민원·행정대행 전문</div></div></a>
+    <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html"><i class="fas fa-home menu-icon"></i>홈</a></li>
+    <li><a href="about.html"><i class="fas fa-user-tie menu-icon"></i>행정사 소개</a></li>
+    <li><a href="services.html"><i class="fas fa-th-large menu-icon"></i>서비스 안내</a></li>
+    <li><a href="apply.html"><i class="fas fa-edit menu-icon"></i>민원대행 신청</a></li>
+    <li><a href="process.html"><i class="fas fa-tasks menu-icon"></i>진행절차</a></li>
+    <li><a href="faq.html"><i class="fas fa-question-circle menu-icon"></i>FAQ</a></li>
+    <li><a href="notice.html"><i class="fas fa-bullhorn menu-icon"></i>공지사항</a></li>
+    <li><a href="contact.html"><i class="fas fa-phone menu-icon"></i>문의하기</a></li>
+    <li><a href="admin.html"><i class="fas fa-lock menu-icon"></i>관리자</a></li>
+  </ul>
+  <a href="apply.html" class="mobile-menu-cta"><i class="fas fa-edit"></i> 민원대행 신청하기</a>
+</div>
+
+<section class="page-hero">
+  <h1>문의하기</h1>
+  <p>궁금한 점이 있으시면 언제든 문의해 주세요.</p>
+  <div class="breadcrumb"><a href="index.html">홈</a><i class="fas fa-chevron-right"></i><span>문의하기</span></div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="contact-layout">
+      <!-- 문의 폼 -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-envelope" style="color:var(--accent);margin-right:8px;"></i>온라인 문의</h3>
+          </div>
+          <div class="card-body">
+            <div class="highlight-box" style="margin-bottom:20px;">
+              <i class="fas fa-info-circle" style="color:var(--primary);margin-right:6px;"></i>
+              <strong>민원대행 신청</strong>이 필요하신 경우에는 <a href="apply.html" style="color:var(--accent);font-weight:700;">민원대행 신청 페이지</a>를 이용해 주세요. 더 빠르고 체계적인 접수가 가능합니다.
+            </div>
+            <div id="contactForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">성명 / 회사명 <span class="required">*</span></label>
+                  <input type="text" id="c_name" class="form-control" placeholder="성함 또는 회사명" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">연락처 <span class="required">*</span></label>
+                  <input type="tel" id="c_phone" class="form-control" placeholder="010-0000-0000" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">이메일 <span class="required">*</span></label>
+                <input type="email" id="c_email" class="form-control" placeholder="example@email.com" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">문의 유형</label>
+                <select id="c_type" class="form-control">
+                  <option value="">선택하세요</option>
+                  <option>서비스 문의</option>
+                  <option>비용 문의</option>
+                  <option>진행 방법 문의</option>
+                  <option>접수 문의</option>
+                  <option>기타</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">문의 내용 <span class="required">*</span></label>
+                <textarea id="c_content" class="form-control" rows="6" placeholder="문의하실 내용을 입력해 주세요." required></textarea>
+              </div>
+              <div class="form-group">
+                <label class="check-item">
+                  <input type="checkbox" id="c_privacy" required>
+                  <span style="font-size:0.85rem;">[필수] 개인정보 수집·이용에 동의합니다.</span>
+                </label>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="submitContact()">
+                <i class="fas fa-paper-plane"></i> 문의 보내기
+              </button>
+            </div>
+            <div id="contactSuccess" style="display:none;text-align:center;padding:32px;">
+              <div style="width:56px;height:56px;border-radius:50%;background:#E6FFFA;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--success);margin:0 auto 16px;"><i class="fas fa-check"></i></div>
+              <h3 style="color:var(--primary);margin-bottom:8px;">문의가 접수되었습니다</h3>
+              <p style="font-size:0.88rem;color:var(--text-mid);">영업일 기준 24시간 이내에 답변드리겠습니다.</p>
+              <button onclick="resetContact()" class="btn btn-outline" style="margin-top:16px;">새 문의 작성</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 연락처 정보 -->
+      <aside>
+        <div class="contact-info-card">
+          <h4><i class="fas fa-address-card" style="color:var(--accent);"></i> 연락처 정보</h4>
+          <div class="contact-detail-item">
+            <div class="contact-detail-icon"><i class="fas fa-phone"></i></div>
+            <div class="contact-detail-text">
+              <strong>전화 문의</strong>
+              <span><a href="tel:010-7128-8192" style="color:var(--primary);font-weight:700;">010-7128-8192</a></span>
+            </div>
+          </div>
+          <div class="contact-detail-item">
+            <div class="contact-detail-icon"><i class="fas fa-envelope"></i></div>
+            <div class="contact-detail-text">
+              <strong>이메일 문의</strong>
+              <span><a href="mailto:cirrus01@naver.com" style="color:var(--primary);">cirrus01@naver.com</a></span>
+            </div>
+          </div>
+          <div class="contact-detail-item">
+            <div class="contact-detail-icon"><i class="fas fa-clock"></i></div>
+            <div class="contact-detail-text">
+              <strong>상담 시간</strong>
+              <span>평일 09:00 ~ 18:00<br>(점심 12:00 ~ 13:00)</span>
+            </div>
+          </div>
+          <div class="contact-detail-item">
+            <div class="contact-detail-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="contact-detail-text">
+              <strong>사무소 주소</strong>
+              <span>서울특별시 강남구<br>강남대로320 황화빌딩 1202호</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-info-card" style="background:var(--primary);border-color:var(--primary);">
+          <h4 style="color:white;"><i class="fas fa-bolt"></i> 빠른 접수</h4>
+          <p style="font-size:0.85rem;color:rgba(255,255,255,0.8);margin-bottom:16px;">
+            문의 전에 바로 신청서를 작성하면 더 빠르게 처리됩니다.
+          </p>
+          <a href="apply.html" class="btn" style="background:var(--accent);color:white;width:100%;justify-content:center;">
+            <i class="fas fa-edit"></i> 민원대행 신청하기
+          </a>
+        </div>
+
+        <div class="contact-info-card">
+          <h4><i class="fas fa-map" style="color:var(--accent);"></i> 오시는 길</h4>
+          <a href="https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EA%B0%95%EB%82%A8%EB%8C%80%EB%A1%9C%20320" target="_blank" class="map-placeholder" style="text-decoration:none; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; transition:all 0.2s; cursor:pointer; overflow:hidden; position:relative;">
+            <!-- 네이버 로고 연상 색상 -->
+            <div style="width:50px; height:50px; border-radius:50%; background:#03C75A; color:white; display:flex; align-items:center; justify-content:center; font-size:1.6rem; box-shadow:0 4px 10px rgba(3,199,90,0.3);">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div style="text-align:center;">
+              <span style="display:block; font-size:0.95rem; font-weight:700; color:var(--text-dark);">네이버 지도에서 보기</span>
+              <span style="display:block; font-size:0.78rem; color:var(--text-light); margin-top:2px;">서울 강남구 강남대로 320</span>
+            </div>
+          </a>
+          <p style="font-size:0.8rem;color:var(--text-light);margin-top:10px;line-height:1.6;">
+            <strong>지하철:</strong> 2호선 강남역 4번 출구 도보 5분 (대로변)<br>
+            <strong>주차:</strong> 황화빌딩 내 주차 이용 가능
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom">
+      <span>© 2025 청솔행정사사무소. All rights reserved.</span>
+      <div class="footer-bottom-links"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+    </div>
+  </div>
+</footer>
+
+<div class="floating-cta">
+  <a href="apply.html" class="floating-cta-btn primary-btn"><i class="fas fa-edit"></i> 신청하기</a>
+  <a href="tel:010-7128-8192" class="floating-cta-btn phone-btn" title="전화 문의"><i class="fas fa-phone"></i></a>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+async function submitContact() {
+  const name = document.getElementById('c_name').value.trim();
+  const phone = document.getElementById('c_phone').value.trim();
+  const email = document.getElementById('c_email').value.trim();
+  const content = document.getElementById('c_content').value.trim();
+  const privacy = document.getElementById('c_privacy').checked;
+
+  if (!name || !phone || !email || !content) {
+    showToast('필수 항목을 모두 입력해 주세요.', 'error'); return;
+  }
+  if (!privacy) {
+    showToast('개인정보 수집·이용 동의가 필요합니다.', 'error'); return;
+  }
+
+  try {
+    // 문의는 applications 테이블에 저장 (category: 일반문의)
+    await API.create('applications', {
+      app_number: generateAppNumber(),
+      applicant_type: '개인',
+      company_name: name,
+      manager_name: name,
+      phone,
+      email,
+      category: '일반문의',
+      sub_service: document.getElementById('c_type').value || '일반문의',
+      content,
+      reply_method: '이메일',
+      status: '접수완료',
+      is_urgent: false,
+      privacy_agreed: true,
+      admin_memo: ''
+    });
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contactSuccess').style.display = 'block';
+    showToast('문의가 접수되었습니다!', 'success');
+  } catch(e) {
+    showToast('오류가 발생했습니다. 다시 시도해 주세요.', 'error');
+  }
+}
+
+function resetContact() {
+  document.getElementById('contactForm').style.display = 'block';
+  document.getElementById('contactSuccess').style.display = 'none';
+  document.querySelectorAll('#contactForm input, #contactForm textarea, #contactForm select').forEach(el => el.value = '');
+  document.getElementById('c_privacy').checked = false;
+}
+</script>
+</body>
+</html>

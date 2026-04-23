@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>민원대행 신청 | 청솔행정사사무소</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* drawer 방식으로 전환 - display 제어 불필요 */
+    .anim{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+    .anim.anim-done{opacity:1!important;transform:translateY(0)!important}
+    .apply-layout { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 28px 0; }
+    @media(min-width:900px){ .apply-layout { grid-template-columns: 1fr 320px; align-items: start; } }
+    .apply-main {}
+    .apply-sidebar { display: none; }
+    @media(min-width:900px){ .apply-sidebar { display: block; position: sticky; top: 84px; } }
+    .side-guide-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; }
+    .side-guide-card h4 { color: var(--primary); font-size: 0.9rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    .guide-list { display: flex; flex-direction: column; gap: 8px; }
+    .guide-step { display: flex; align-items: flex-start; gap: 10px; font-size: 0.82rem; color: var(--text-mid); }
+    .guide-step-num { width: 20px; height: 20px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0; }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a3a5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="청솔행정사">
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><i class="fas fa-balance-scale"></i></div>
+      <div class="logo-text">
+        <div class="logo-name">청솔행정사사무소</div>
+        <div class="logo-sub">기업민원·행정대행 전문</div>
+      </div>
+    </a>
+    <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html"><i class="fas fa-home menu-icon"></i>홈</a></li>
+    <li><a href="about.html"><i class="fas fa-user-tie menu-icon"></i>행정사 소개</a></li>
+    <li><a href="services.html"><i class="fas fa-th-large menu-icon"></i>서비스 안내</a></li>
+    <li><a href="apply.html"><i class="fas fa-edit menu-icon"></i>민원대행 신청</a></li>
+    <li><a href="process.html"><i class="fas fa-tasks menu-icon"></i>진행절차</a></li>
+    <li><a href="faq.html"><i class="fas fa-question-circle menu-icon"></i>FAQ</a></li>
+    <li><a href="notice.html"><i class="fas fa-bullhorn menu-icon"></i>공지사항</a></li>
+    <li><a href="contact.html"><i class="fas fa-phone menu-icon"></i>문의하기</a></li>
+    <li><a href="admin.html"><i class="fas fa-lock menu-icon"></i>관리자</a></li>
+  </ul>
+  <a href="apply.html" class="mobile-menu-cta"><i class="fas fa-edit"></i> 민원대행 신청하기</a>
+</div>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="padding-bottom:0;">
+  <div class="container">
+    <h1>민원대행 신청</h1>
+    <p>카테고리를 선택하고 신청서를 작성하시면 담당자가 검토 후 연락드립니다.</p>
+    <div class="breadcrumb">
+      <a href="index.html">홈</a>
+      <i class="fas fa-chevron-right"></i>
+      <span>민원대행 신청</span>
+    </div>
+  </div>
+</section>
+
+<!-- STEP PROGRESS -->
+<div class="step-progress" id="stepProgress">
+  <div class="step-item active" data-step="1">
+    <div class="step-circle"><i class="fas fa-th-large"></i></div>
+    <div class="step-label">카테고리 선택</div>
+  </div>
+  <div class="step-connector" id="conn1"></div>
+  <div class="step-item" data-step="2">
+    <div class="step-circle"><i class="fas fa-file-alt"></i></div>
+    <div class="step-label">신청서 작성</div>
+  </div>
+  <div class="step-connector" id="conn2"></div>
+  <div class="step-item" data-step="3">
+    <div class="step-circle"><i class="fas fa-paperclip"></i></div>
+    <div class="step-label">파일 첨부</div>
+  </div>
+  <div class="step-connector" id="conn3"></div>
+  <div class="step-item" data-step="4">
+    <div class="step-circle"><i class="fas fa-shield-alt"></i></div>
+    <div class="step-label">동의 확인</div>
+  </div>
+  <div class="step-connector" id="conn4"></div>
+  <div class="step-item" data-step="5">
+    <div class="step-circle"><i class="fas fa-check"></i></div>
+    <div class="step-label">접수 완료</div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div style="background:var(--bg-light); min-height: 60vh; padding-bottom: 60px;">
+  <div class="container">
+    <div class="apply-layout">
+      <!-- MAIN FORM -->
+      <div class="apply-main">
+
+        <!-- STEP 1: 카테고리 선택 -->
+        <div class="app-step active" id="step1">
+          <div class="step-card">
+            <div class="step-card-header">
+              <i class="fas fa-th-large"></i>
+              <h3>신청할 업무 카테고리를 선택해 주세요</h3>
+            </div>
+            <div class="step-card-body">
+              <div class="category-cards" id="categoryCards">
+                <!-- JS 렌더링 -->
+              </div>
+              <div class="step-nav-btns" style="justify-content:flex-end; margin-top:24px;">
+                <button class="btn btn-primary" onclick="goToStep(2)">
+                  다음 단계 <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: 신청서 작성 -->
+        <div class="app-step" id="step2">
+          <div class="step-card">
+            <div class="step-card-header">
+              <i class="fas fa-file-alt"></i>
+              <h3>신청 정보를 입력해 주세요</h3>
+            </div>
+            <div class="step-card-body">
+              <!-- 신청 구분 -->
+              <div class="form-group">
+                <label class="form-label">신청 구분 <span class="required">*</span></label>
+                <div class="radio-cards">
+                  <label class="radio-card" id="rc_individual">
+                    <input type="radio" name="applicant_type" value="개인">
+                    <span>개인</span>
+                  </label>
+                  <label class="radio-card" id="rc_sole">
+                    <input type="radio" name="applicant_type" value="개인사업자">
+                    <span>개인사업자</span>
+                  </label>
+                  <label class="radio-card" id="rc_corp">
+                    <input type="radio" name="applicant_type" value="법인">
+                    <span>법인</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">회사명 / 성명 <span class="required">*</span></label>
+                  <input type="text" id="company_name" class="form-control" placeholder="회사명 또는 성함을 입력하세요" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">담당자명 <span class="required">*</span></label>
+                  <input type="text" id="manager_name" class="form-control" placeholder="담당자 성함" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">연락처 <span class="required">*</span></label>
+                  <input type="tel" id="phone" class="form-control" placeholder="010-0000-0000" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">이메일 <span class="required">*</span></label>
+                  <input type="email" id="email" class="form-control" placeholder="example@email.com" required>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">업종</label>
+                  <select id="business_type" class="form-control">
+                    <option value="">업종 선택</option>
+                    <option>건설·배관</option>
+                    <option>전기·전자</option>
+                    <option>통신·IT</option>
+                    <option>자동화·계측기</option>
+                    <option>공구·기계부품</option>
+                    <option>무역·전자상거래</option>
+                    <option>제조·산업용품</option>
+                    <option>유통·도소매</option>
+                    <option>소방·안전</option>
+                    <option>기타</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">사업자등록번호 <span style="font-size:0.75rem;color:var(--text-light);">(선택)</span></label>
+                  <input type="text" id="business_reg_no" class="form-control" placeholder="000-00-00000">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">세부 업무명 <span class="required">*</span></label>
+                <select id="sub_service" class="form-control" required>
+                  <option value="">카테고리 선택 후 세부 업무를 선택하세요</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">의뢰 내용 <span class="required">*</span></label>
+                <textarea id="content" class="form-control" rows="5" required placeholder="업무 내용을 최대한 자세히 입력해 주세요.
+예: 변경 사항, 관련 기관명, 현재 상황 등"></textarea>
+                <p class="form-hint">구체적으로 작성할수록 더 정확한 안내를 받으실 수 있습니다.</p>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">현재 진행 상황</label>
+                <input type="text" id="current_status" class="form-control" placeholder="예: 보완 요청 통지를 받았습니다 / 처음 신청입니다 / 기간 촉박합니다">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">마감기한 <span style="font-size:0.75rem;color:var(--text-light);">(있는 경우)</span></label>
+                  <input type="text" id="deadline" class="form-control" placeholder="예: 2025. 03. 31">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">희망 회신 방법 <span class="required">*</span></label>
+                  <select id="reply_method" class="form-control" required>
+                    <option value="">선택하세요</option>
+                    <option value="전화">전화</option>
+                    <option value="이메일">이메일</option>
+                    <option value="둘 다">둘 다</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">
+                  <span style="display:flex;align-items:center;gap:10px;">
+                    <span>긴급 처리 요청</span>
+                    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:400;">
+                      <input type="checkbox" id="is_urgent" style="width:18px;height:18px;accent-color:var(--accent);">
+                      <span style="font-size:0.88rem;color:var(--text-mid);">긴급 처리를 원합니다 <span style="color:var(--accent);font-size:0.78rem;">(당일 검토)</span></span>
+                    </label>
+                  </span>
+                </label>
+              </div>
+
+              <div class="step-nav-btns">
+                <button class="btn btn-outline" onclick="goToStep(1)">
+                  <i class="fas fa-arrow-left"></i> 이전
+                </button>
+                <button class="btn btn-primary" onclick="goToStep(3)">
+                  다음 단계 <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: 파일 첨부 -->
+        <div class="app-step" id="step3">
+          <div class="step-card">
+            <div class="step-card-header">
+              <i class="fas fa-paperclip"></i>
+              <h3>관련 서류를 첨부해 주세요 (선택)</h3>
+            </div>
+            <div class="step-card-body">
+              <div class="highlight-box">
+                <i class="fas fa-info-circle" style="color:var(--primary);margin-right:6px;"></i>
+                지금 서류가 없으셔도 됩니다. 접수 후 담당자가 필요 서류를 안내해 드립니다.<br>
+                허용 형식: PDF, JPG, PNG, DOCX, XLSX (최대 10MB / 파일당)
+              </div>
+
+              <div class="file-upload-area" id="dropZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>파일을 드래그&드롭하거나 아래 버튼을 클릭하세요</p>
+                <label class="upload-btn" for="fileInput">파일 선택</label>
+                <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx" style="display:none;">
+              </div>
+              <div class="file-list" id="fileList"></div>
+
+              <div class="step-nav-btns" style="margin-top: 24px;">
+                <button class="btn btn-outline" onclick="goToStep(2)">
+                  <i class="fas fa-arrow-left"></i> 이전
+                </button>
+                <button class="btn btn-primary" onclick="goToStep(4)">
+                  다음 단계 <i class="fas fa-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: 개인정보 동의 -->
+        <div class="app-step" id="step4">
+          <div class="step-card">
+            <div class="step-card-header">
+              <i class="fas fa-shield-alt"></i>
+              <h3>개인정보 수집·이용 동의</h3>
+            </div>
+            <div class="step-card-body">
+              <!-- 입력내용 요약 -->
+              <div id="summaryBox" style="background:var(--bg-light);border-radius:var(--radius-md);padding:20px;margin-bottom:20px;border:1px solid var(--border);">
+                <h4 style="color:var(--primary);font-size:0.9rem;margin-bottom:12px;"><i class="fas fa-clipboard-list" style="margin-right:6px;"></i>입력 내용 확인</h4>
+                <div id="summaryContent" style="font-size:0.85rem;"></div>
+              </div>
+
+              <!-- 개인정보 동의 박스 -->
+              <div style="border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;">
+                <div style="background:var(--bg-light);padding:12px 16px;border-bottom:1px solid var(--border);">
+                  <strong style="font-size:0.88rem;color:var(--primary);">개인정보 수집·이용 동의 (필수)</strong>
+                </div>
+                <div style="padding:16px;font-size:0.82rem;color:var(--text-mid);line-height:1.8;max-height:200px;overflow-y:auto;">
+                  <strong>1. 수집 항목:</strong> 회사명(성명), 담당자명, 연락처, 이메일, 업종, 의뢰 내용, 첨부파일<br>
+                  <strong>2. 수집 목적:</strong> 민원대행 서비스 제공을 위한 상담 및 접수 처리<br>
+                  <strong>3. 보유 기간:</strong> 서비스 제공 완료 후 3년 (단, 관계 법령에 따라 보존 필요 시 해당 기간까지)<br>
+                  <strong>4. 제3자 제공:</strong> 업무 처리를 위해 필요한 행정기관에 최소한의 정보 제공 가능 (사전 고지 후 제공)<br>
+                  <strong>5. 동의 거부 권리:</strong> 귀하는 개인정보 수집·이용에 거부할 수 있으나, 거부 시 서비스 이용이 제한될 수 있습니다.<br><br>
+                  본 동의는 청솔행정사사무소의 민원대행 서비스 접수 처리를 위한 개인정보 수집·이용에 관한 동의입니다. 민감한 서류 (신분증, 인감 등)는 접수 완료 후 담당자가 안내하는 보안 채널을 통해 별도 전달해 주시기 바랍니다.
+                </div>
+              </div>
+
+              <div class="check-group" style="margin-bottom:20px;">
+                <label class="check-item">
+                  <input type="checkbox" id="privacy_all" onchange="toggleAllPrivacy(this)">
+                  <span style="font-weight:700;color:var(--text-dark);">전체 동의</span>
+                </label>
+                <label class="check-item" style="margin-left:16px;">
+                  <input type="checkbox" id="privacy_required" required>
+                  <span>[필수] 개인정보 수집·이용 동의</span>
+                </label>
+                <label class="check-item" style="margin-left:16px;">
+                  <input type="checkbox" id="privacy_marketing">
+                  <span>[선택] 마케팅 및 서비스 안내 수신 동의</span>
+                </label>
+              </div>
+
+              <div class="step-nav-btns">
+                <button class="btn btn-outline" onclick="goToStep(3)">
+                  <i class="fas fa-arrow-left"></i> 이전
+                </button>
+                <button class="btn btn-primary" id="submitBtn" onclick="submitApplication()">
+                  <i class="fas fa-paper-plane"></i> 신청서 제출하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 5: 접수 완료 -->
+        <div class="app-step" id="step5">
+          <div class="success-card">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h2>신청이 완료되었습니다!</h2>
+            <p>담당자가 접수 내용을 검토한 후<br>영업일 기준 24시간 이내에 연락드립니다.</p>
+            <div class="app-num-badge" id="appNumberDisplay"></div>
+            <p style="font-size:0.82rem;margin-bottom:24px;">
+              <i class="fas fa-envelope" style="color:var(--primary);margin-right:6px;"></i>
+              접수 완료 확인 메일이 발송되었습니다.<br>
+              이메일을 받지 못하신 경우 스팸함을 확인해 주세요.
+            </p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <a href="index.html" class="btn btn-outline btn-block">
+                <i class="fas fa-home"></i> 홈으로 돌아가기
+              </a>
+              <button onclick="resetForm()" class="btn btn-primary btn-block">
+                <i class="fas fa-plus"></i> 추가 신청하기
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR -->
+      <aside class="apply-sidebar">
+        <div class="side-guide-card">
+          <h4><i class="fas fa-map-signs" style="color:var(--accent);"></i> 신청 안내</h4>
+          <div class="guide-list">
+            <div class="guide-step">
+              <div class="guide-step-num">1</div>
+              <span>카테고리 선택 후 신청서 작성</span>
+            </div>
+            <div class="guide-step">
+              <div class="guide-step-num">2</div>
+              <span>관련 서류 있으면 첨부 (없어도 됩니다)</span>
+            </div>
+            <div class="guide-step">
+              <div class="guide-step-num">3</div>
+              <span>개인정보 동의 후 제출</span>
+            </div>
+            <div class="guide-step">
+              <div class="guide-step-num">4</div>
+              <span>영업일 24시간 내 담당자 연락</span>
+            </div>
+          </div>
+        </div>
+        <div class="side-guide-card">
+          <h4><i class="fas fa-phone-alt" style="color:var(--accent);"></i> 전화 문의</h4>
+          <p style="font-size:1.1rem;font-weight:800;color:var(--primary);margin-bottom:4px;">010-7128-8192</p>
+          <p style="font-size:0.8rem;color:var(--text-light);">평일 09:00 ~ 18:00</p>
+        </div>
+        <div class="side-guide-card" style="background:var(--bg-light);">
+          <h4><i class="fas fa-lock" style="color:var(--accent);"></i> 보안 안내</h4>
+          <p style="font-size:0.8rem;color:var(--text-light);line-height:1.7;">
+            민감 서류(신분증, 인감 등)는 접수 후 담당자가 별도의 보안 채널을 안내해 드립니다. 이 단계에서는 업무 파악에 필요한 서류만 첨부하세요.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="footer" style="margin-top:0;">
+  <div class="footer-inner">
+    <div class="footer-bottom">
+      <span>© 2025 청솔행정사사무소. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">개인정보처리방침</a>
+        <a href="#">이용약관</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script>
+let currentStep = 1;
+let selectedCategory = '';
+let uploadedFiles = [];
+const formData = {};
+
+// ===== 카테고리 카드 렌더링 =====
+function renderCategoryCards() {
+  const container = document.getElementById('categoryCards');
+  container.innerHTML = CATEGORIES.map(cat => `
+    <div class="category-card ${selectedCategory === cat.id ? 'selected' : ''}" 
+         onclick="selectCategory('${cat.id}')" id="cat_${cat.id}">
+      <div class="cat-icon ${cat.iconClass}">${cat.icon}</div>
+      <div class="cat-info">
+        <h4>${cat.name}</h4>
+        <p>${cat.desc.substring(0, 40)}...</p>
+      </div>
+      <div class="cat-check"><i class="fas fa-check" style="font-size:0.7rem;"></i></div>
+    </div>
+  `).join('');
+}
+
+function selectCategory(id) {
+  selectedCategory = id;
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('cat_' + id)?.classList.add('selected');
+  updateSubServices(id);
+}
+
+function updateSubServices(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const sel = document.getElementById('sub_service');
+  if (!sel || !cat) return;
+  sel.innerHTML = '<option value="">세부 업무를 선택하세요</option>';
+  cat.subServices.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s; opt.textContent = s;
+    sel.appendChild(opt);
+  });
+}
+
+// ===== 라디오 카드 =====
+document.querySelectorAll('input[name="applicant_type"]').forEach(radio => {
+  radio.addEventListener('change', e => {
+    document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+    e.target.closest('.radio-card')?.classList.add('selected');
+  });
+});
+
+// ===== 파일 업로드 =====
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileList = document.getElementById('fileList');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  addFiles(e.dataTransfer.files);
+});
+fileInput.addEventListener('change', e => addFiles(e.target.files));
+
+function addFiles(files) {
+  const allowedExts = ['.pdf','.jpg','.jpeg','.png','.docx','.xlsx'];
+  Array.from(files).forEach(file => {
+    const ext = '.' + file.name.split('.').pop().toLowerCase();
+    if (!allowedExts.includes(ext)) {
+      showToast(file.name + ' - 허용되지 않는 파일 형식입니다.', 'error'); return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showToast(file.name + ' - 10MB 초과 파일입니다.', 'error'); return;
+    }
+    uploadedFiles.push(file);
+  });
+  renderFileList();
+  fileInput.value = '';
+}
+
+function renderFileList() {
+  fileList.innerHTML = uploadedFiles.map((f, i) => `
+    <div class="file-item">
+      <i class="fas fa-file"></i>
+      <span>${f.name}</span>
+      <span style="color:var(--text-light);font-size:0.78rem;">${(f.size/1024).toFixed(0)}KB</span>
+      <span class="remove-file" onclick="removeFile(${i})"><i class="fas fa-times"></i></span>
+    </div>
+  `).join('');
+}
+
+function removeFile(i) {
+  uploadedFiles.splice(i, 1);
+  renderFileList();
+}
+
+// ===== 전체 동의 =====
+function toggleAllPrivacy(el) {
+  document.getElementById('privacy_required').checked = el.checked;
+  document.getElementById('privacy_marketing').checked = el.checked;
+}
+
+// ===== 스텝 이동 =====
+function goToStep(step) {
+  // 유효성 검사
+  if (step === 2 && !selectedCategory) {
+    showToast('신청할 업무 카테고리를 선택해 주세요.', 'error'); return;
+  }
+  if (step === 3) {
+    const requiredFields = ['company_name','manager_name','phone','email','sub_service','content','reply_method'];
+    let valid = true;
+    requiredFields.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el || !el.value.trim()) {
+        el?.style.setProperty('border-color', 'var(--danger)');
+        valid = false;
+      } else {
+        el.style.borderColor = '';
+      }
+    });
+    const applicantType = document.querySelector('input[name="applicant_type"]:checked');
+    if (!applicantType) {
+      showToast('신청 구분을 선택해 주세요.', 'error'); return;
+    }
+    if (!valid) {
+      showToast('필수 항목을 모두 입력해 주세요.', 'error'); return;
+    }
+  }
+  if (step === 5) return; // submitApplication에서 처리
+
+  currentStep = step;
+  document.querySelectorAll('.app-step').forEach((el, i) => {
+    el.classList.toggle('active', i + 1 === step);
+  });
+  updateStepProgress(step);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (step === 4) buildSummary();
+}
+
+function updateStepProgress(step) {
+  document.querySelectorAll('.step-item').forEach((el, i) => {
+    const s = i + 1;
+    el.classList.remove('active', 'done');
+    if (s === step) el.classList.add('active');
+    else if (s < step) el.classList.add('done');
+  });
+  for (let i = 1; i <= 4; i++) {
+    const conn = document.getElementById('conn' + i);
+    if (conn) conn.classList.toggle('done', i < step);
+  }
+}
+
+// ===== 요약 내용 생성 =====
+function buildSummary() {
+  const cat = CATEGORIES.find(c => c.id === selectedCategory);
+  const applicantType = document.querySelector('input[name="applicant_type"]:checked')?.value || '-';
+  const rows = [
+    ['카테고리', cat?.name || '-'],
+    ['세부 업무', document.getElementById('sub_service')?.value || '-'],
+    ['신청 구분', applicantType],
+    ['회사명/성명', document.getElementById('company_name')?.value || '-'],
+    ['담당자', document.getElementById('manager_name')?.value || '-'],
+    ['연락처', document.getElementById('phone')?.value || '-'],
+    ['이메일', document.getElementById('email')?.value || '-'],
+    ['업종', document.getElementById('business_type')?.value || '-'],
+    ['희망 회신', document.getElementById('reply_method')?.value || '-'],
+    ['긴급 여부', document.getElementById('is_urgent')?.checked ? '⚠️ 긴급' : '일반'],
+    ['첨부 파일', uploadedFiles.length ? uploadedFiles.map(f => f.name).join(', ') : '없음'],
+  ];
+  const box = document.getElementById('summaryContent');
+  box.innerHTML = `<table style="width:100%;border-collapse:collapse;">
+    ${rows.map(([k,v]) => `
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:7px 0;color:var(--text-light);font-size:0.82rem;width:100px;">${k}</td>
+        <td style="padding:7px 0;color:var(--text-dark);font-size:0.85rem;font-weight:500;">${v}</td>
+      </tr>
+    `).join('')}
+  </table>`;
+}
+
+// ===================================================
+// ★ Google Apps Script 웹훅 URL 설정
+//   방법 1) 아래 URL을 실제 GAS 배포 URL로 직접 교체 (영구 적용, 권장)
+//   방법 2) gas-setup.html 에서 URL을 입력하면 localStorage에 저장됩니다.
+//   자세한 설정 방법은 gas-setup.html 을 참조하세요.
+// ===================================================
+const GAS_WEBHOOK_URL_HARDCODED = 'YOUR_GAS_WEBHOOK_URL_HERE';
+
+// localStorage에 저장된 URL이 있으면 우선 사용 (gas-setup.html 에서 설정)
+const GAS_WEBHOOK_URL = (() => {
+  try {
+    const stored = localStorage.getItem('cheongsol_gas_webhook_url');
+    if (stored && stored.startsWith('https://script.google.com/macros/')) return stored;
+  } catch(e) {}
+  return GAS_WEBHOOK_URL_HARDCODED;
+})();
+
+// GAS 웹훅으로 이메일 알림 전송 (실패해도 접수는 정상 완료)
+async function sendEmailNotification(payload) {
+  if (!GAS_WEBHOOK_URL || GAS_WEBHOOK_URL === 'YOUR_GAS_WEBHOOK_URL_HERE') {
+    console.warn('[이메일 알림] GAS 웹훅 URL이 설정되지 않았습니다. gas-setup.html 을 참조하세요.');
+    return { ok: false, reason: 'no_url' };
+  }
+  try {
+    // GAS는 CORS 제한이 있어 no-cors 모드로 전송 (fire-and-forget)
+    await fetch(GAS_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    console.log('[이메일 알림] GAS 웹훅 전송 완료');
+    return { ok: true };
+  } catch (err) {
+    console.error('[이메일 알림] 웹훅 전송 실패:', err);
+    return { ok: false, reason: err.message };
+  }
+}
+
+// ===== 신청서 제출 =====
+async function submitApplication() {
+  if (!document.getElementById('privacy_required').checked) {
+    showToast('개인정보 수집·이용 동의는 필수입니다.', 'error'); return;
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 제출 중...';
+
+  try {
+    const appNumber = generateAppNumber();
+    const cat = CATEGORIES.find(c => c.id === selectedCategory);
+    const now = new Date();
+    const submittedAt = now.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+    const payload = {
+      app_number: appNumber,
+      applicant_type: document.querySelector('input[name="applicant_type"]:checked')?.value || '',
+      company_name: document.getElementById('company_name').value,
+      manager_name: document.getElementById('manager_name').value,
+      phone: document.getElementById('phone').value,
+      email: document.getElementById('email').value,
+      business_type: document.getElementById('business_type').value,
+      business_reg_no: document.getElementById('business_reg_no').value,
+      category: cat?.name || selectedCategory,
+      sub_service: document.getElementById('sub_service').value,
+      content: document.getElementById('content').value,
+      current_status: document.getElementById('current_status').value,
+      deadline: document.getElementById('deadline').value,
+      reply_method: document.getElementById('reply_method').value,
+      is_urgent: document.getElementById('is_urgent').checked,
+      status: '접수완료',
+      privacy_agreed: true,
+      admin_memo: '',
+      submitted_at: submittedAt
+    };
+
+    // 1) 테이블 API 저장 (주 데이터 저장)
+    await API.create('applications', payload);
+
+    // 2) GAS 웹훅으로 이메일 알림 전송 (비동기, 실패해도 접수 완료)
+    sendEmailNotification({
+      type: 'new_application',
+      app_number: appNumber,
+      submitted_at: submittedAt,
+      is_urgent: payload.is_urgent,
+      category: payload.category,
+      sub_service: payload.sub_service,
+      applicant_type: payload.applicant_type,
+      company_name: payload.company_name,
+      manager_name: payload.manager_name,
+      phone: payload.phone,
+      email: payload.email,
+      business_type: payload.business_type,
+      content: payload.content,
+      deadline: payload.deadline,
+      reply_method: payload.reply_method,
+      notify_to: 'cirrus01@naver.com'
+    });
+
+    document.getElementById('appNumberDisplay').textContent = '접수번호: ' + appNumber;
+    currentStep = 5;
+    document.querySelectorAll('.app-step').forEach((el, i) => {
+      el.classList.toggle('active', i === 4);
+    });
+    updateStepProgress(5);
+    showToast('신청이 완료되었습니다!', 'success');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch(e) {
+    showToast('제출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'error');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 신청서 제출하기';
+  }
+}
+
+// ===== 폼 리셋 =====
+function resetForm() {
+  selectedCategory = '';
+  uploadedFiles = [];
+  currentStep = 1;
+  document.querySelectorAll('input[type=text], input[type=tel], input[type=email], textarea, select').forEach(el => el.value = '');
+  document.querySelectorAll('input[type=checkbox]').forEach(el => el.checked = false);
+  document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('selected'));
+  renderFileList();
+  goToStep(1);
+}
+
+// URL 파라미터에서 카테고리 읽기
+function initFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('category');
+  if (cat) {
+    selectCategory(cat);
+  }
+}
+
+// 초기화
+document.addEventListener('DOMContentLoaded', () => {
+  renderCategoryCards();
+  initFromUrl();
+});
+</script>
+</body>
+</html>

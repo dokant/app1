@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>자주 묻는 질문 | 청솔행정사사무소</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;color:#1a1a2e;background:#fff;overflow-x:hidden}a{text-decoration:none;color:inherit}ul,ol{list-style:none}img{max-width:100%;height:auto;display:block}
+    #header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.08)}.header-inner{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 20px;max-width:1200px;margin:0 auto}
+    .logo{display:flex;align-items:center;gap:10px}.logo-icon{width:38px;height:38px;background:#1a3a5c;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0}.logo-name{font-size:1rem;font-weight:700;color:#1a3a5c}.logo-sub{font-size:.68rem;color:#718096}
+    .main-nav{display:none}.header-cta{display:none}.nav-toggle{display:flex;flex-direction:column;gap:5px;padding:8px;cursor:pointer;border:none;background:none}.nav-toggle span{display:block;width:22px;height:2px;background:#1a3a5c;border-radius:2px}
+    /* mobile-menu 스타일은 style.css 드로어 스타일로 통합 */
+    .container{width:100%;max-width:1200px;margin:0 auto;padding:0 20px}.section{padding:60px 0}.section-header{text-align:center;margin-bottom:40px}.section-header h2{color:#1a3a5c;margin-bottom:12px;font-size:clamp(1.3rem,3vw,2rem);font-weight:700}.section-line{width:48px;height:4px;background:#e85d2a;border-radius:2px;margin:12px auto 0}
+    .page-hero{background:linear-gradient(135deg,#0f2540,#1a3a5c);padding:100px 20px 50px;text-align:center;color:#fff;margin-top:64px}.page-hero h1{color:#fff;font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:10px}.page-hero p{color:rgba(255,255,255,.8);font-size:.95rem}
+    /* main-nav는 항상 숨김 - style.css에서 관리 */
+    .faq-category-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .faq-tab { padding: 8px 18px; border-radius: 100px; font-size: 0.85rem; font-weight: 600; border: 1.5px solid var(--border); color: var(--text-mid); cursor: pointer; transition: var(--transition); background: white; }
+    .faq-tab:hover, .faq-tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a3a5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="청솔행정사">
+</head>
+<body>
+<header id="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><i class="fas fa-balance-scale"></i></div><div class="logo-text"><div class="logo-name">청솔행정사사무소</div><div class="logo-sub">기업민원·행정대행 전문</div></div></a>
+    <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html"><i class="fas fa-home menu-icon"></i>홈</a></li>
+    <li><a href="about.html"><i class="fas fa-user-tie menu-icon"></i>행정사 소개</a></li>
+    <li><a href="services.html"><i class="fas fa-th-large menu-icon"></i>서비스 안내</a></li>
+    <li><a href="apply.html"><i class="fas fa-edit menu-icon"></i>민원대행 신청</a></li>
+    <li><a href="process.html"><i class="fas fa-tasks menu-icon"></i>진행절차</a></li>
+    <li><a href="faq.html"><i class="fas fa-question-circle menu-icon"></i>FAQ</a></li>
+    <li><a href="notice.html"><i class="fas fa-bullhorn menu-icon"></i>공지사항</a></li>
+    <li><a href="contact.html"><i class="fas fa-phone menu-icon"></i>문의하기</a></li>
+    <li><a href="admin.html"><i class="fas fa-lock menu-icon"></i>관리자</a></li>
+  </ul>
+  <a href="apply.html" class="mobile-menu-cta"><i class="fas fa-edit"></i> 민원대행 신청하기</a>
+</div>
+
+<section class="page-hero">
+  <h1>자주 묻는 질문 (FAQ)</h1>
+  <p>고객님이 자주 문의하시는 내용을 모아 정리했습니다.</p>
+  <div class="breadcrumb"><a href="index.html">홈</a><i class="fas fa-chevron-right"></i><span>FAQ</span></div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:800px;">
+    <!-- 카테고리 탭 -->
+    <div class="faq-category-tabs" id="faqTabs">
+      <button class="faq-tab active" onclick="filterFaq('전체', this)">전체</button>
+      <button class="faq-tab" onclick="filterFaq('접수문의', this)">접수 문의</button>
+      <button class="faq-tab" onclick="filterFaq('비용안내', this)">비용 안내</button>
+      <button class="faq-tab" onclick="filterFaq('서류안내', this)">서류 안내</button>
+      <button class="faq-tab" onclick="filterFaq('진행안내', this)">진행 안내</button>
+      <button class="faq-tab" onclick="filterFaq('업무범위', this)">업무 범위</button>
+    </div>
+
+    <div id="faqFullList" class="faq-list">
+      <!-- JS 렌더링 -->
+    </div>
+
+    <!-- 문의 유도 -->
+    <div style="background:var(--bg-light);border-radius:var(--radius-lg);padding:28px;text-align:center;margin-top:32px;border:1px solid var(--border);" class="anim">
+      <i class="fas fa-question-circle" style="font-size:2.5rem;color:var(--primary);margin-bottom:12px;display:block;"></i>
+      <h3 style="color:var(--primary);margin-bottom:8px;">찾으시는 답이 없으신가요?</h3>
+      <p style="font-size:0.88rem;color:var(--text-light);margin-bottom:20px;">직접 문의하시면 담당자가 빠르게 답변드립니다.</p>
+      <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <a href="contact.html" class="btn btn-outline">문의하기</a>
+        <a href="apply.html" class="btn btn-primary">민원대행 신청</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom">
+      <span>© 2025 청솔행정사사무소. All rights reserved.</span>
+      <div class="footer-bottom-links"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+    </div>
+  </div>
+</footer>
+<div class="floating-cta">
+  <a href="apply.html" class="floating-cta-btn primary-btn"><i class="fas fa-edit"></i> 신청하기</a>
+  <a href="tel:010-7128-8192" class="floating-cta-btn phone-btn"><i class="fas fa-phone"></i></a>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+let allFaqs = [];
+let currentFilter = '전체';
+
+// API 실패 시 표시할 기본 FAQ
+const FAQ_STATIC = [
+  { question: '어떤 업무를 대행해 드리나요?', answer: '인허가·등록, 조달·입찰, 기업인증, 계약서·내용증명, 행정심판, 출입국·비자 등 6개 분야의 행정 업무를 전문적으로 대행합니다.', category: '업무범위' },
+  { question: '상담은 어떻게 받을 수 있나요?', answer: '전화(010-7128-8192) 또는 온라인 신청서를 통해 접수하시면 영업일 기준 24시간 이내에 연락드립니다.', category: '접수문의' },
+  { question: '수수료는 어떻게 책정되나요?', answer: '업무 유형과 난이도에 따라 달라집니다. 초기 상담 후 정확한 견적을 안내해 드립니다.', category: '비용' },
+  { question: '서류를 준비하지 않아도 신청 가능한가요?', answer: '네, 우선 신청서를 제출해 주시면 담당자가 필요 서류 목록을 안내드립니다.', category: '서류' },
+  { question: '처리 기간은 얼마나 걸리나요?', answer: '업무 종류에 따라 다르며, 표준 인허가는 2~4주, 단순 서류 작성은 2~3일 내 처리 가능합니다.', category: '진행' },
+  { question: '행정심판 승률은 어느 정도인가요?', answer: '사안에 따라 다르나, 오랜 공직 경험을 바탕으로 행정기관의 처리 방식과 심판 기준을 잘 이해하고 있어 유리한 결과를 위해 최선을 다합니다.', category: '업무범위' },
+  { question: '비용은 선불인가요 후불인가요?', answer: '업무 착수 전 일부 착수금을 받고, 완료 후 잔금 정산하는 방식이 일반적입니다. 업무별로 협의 가능합니다.', category: '비용' },
+  { question: '진행 상황은 어떻게 확인하나요?', answer: '담당자가 진행 단계마다 전화 또는 이메일로 안내드립니다. 문의가 필요하시면 언제든 연락해 주세요.', category: '진행' }
+];
+
+async function loadFaqs() {
+  const container = document.getElementById('faqFullList');
+  try {
+    const data = await API.get('faqs', { limit: 100, sort: 'sort_order' });
+    allFaqs = (data.data && data.data.length > 0) ? data.data : FAQ_STATIC;
+    renderFaqs(allFaqs);
+  } catch(e) {
+    // API 실패 시 정적 FAQ 표시
+    allFaqs = FAQ_STATIC;
+    renderFaqs(allFaqs);
+  }
+}
+
+function renderFaqs(faqs) {
+  const container = document.getElementById('faqFullList');
+  if (!faqs.length) {
+    container.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:32px;">해당 카테고리의 FAQ가 없습니다.</p>';
+    return;
+  }
+  container.innerHTML = faqs.map(f => `
+    <div class="faq-item">
+      <div class="faq-question">
+        <span class="faq-q-text">${f.question}</span>
+        <span class="faq-toggle"><i class="fas fa-chevron-down"></i></span>
+      </div>
+      <div class="faq-answer">${f.answer}</div>
+    </div>
+  `).join('');
+  initFaq();
+}
+
+function filterFaq(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  if (cat === '전체') {
+    renderFaqs(allFaqs);
+  } else {
+    renderFaqs(allFaqs.filter(f => f.category === cat));
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadFaqs);
+</script>
+</body>
+</html>

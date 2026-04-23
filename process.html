@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>진행절차 | 청솔행정사사무소</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;color:#1a1a2e;background:#fff;overflow-x:hidden}a{text-decoration:none;color:inherit}ul,ol{list-style:none}img{max-width:100%;height:auto;display:block}
+    #header{position:fixed;top:0;left:0;right:0;z-index:1000;background:#fff;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.08)}.header-inner{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 20px;max-width:1200px;margin:0 auto}
+    .logo{display:flex;align-items:center;gap:10px}.logo-icon{width:38px;height:38px;background:#1a3a5c;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.1rem;flex-shrink:0}.logo-name{font-size:1rem;font-weight:700;color:#1a3a5c}.logo-sub{font-size:.68rem;color:#718096}
+    .main-nav{display:none}.header-cta{display:none}.nav-toggle{display:flex;flex-direction:column;gap:5px;padding:8px;cursor:pointer;border:none;background:none}.nav-toggle span{display:block;width:22px;height:2px;background:#1a3a5c;border-radius:2px}
+    /* mobile-menu 스타일은 style.css 드로어 스타일로 통합 */
+    .container{width:100%;max-width:1200px;margin:0 auto;padding:0 20px}.section{padding:60px 0}.section-header{text-align:center;margin-bottom:40px}.section-header h2{color:#1a3a5c;margin-bottom:12px;font-size:clamp(1.3rem,3vw,2rem);font-weight:700}.section-line{width:48px;height:4px;background:#e85d2a;border-radius:2px;margin:12px auto 0}
+    .page-hero{background:linear-gradient(135deg,#0f2540,#1a3a5c);padding:100px 20px 50px;text-align:center;color:#fff;margin-top:64px}.page-hero h1{color:#fff;font-size:clamp(1.6rem,4vw,2.4rem);margin-bottom:10px}.page-hero p{color:rgba(255,255,255,.8);font-size:.95rem}
+    @media(min-width:900px){.main-nav{display:block}.header-cta{display:flex;background:#e85d2a;color:#fff;padding:8px 18px;border-radius:6px;font-size:.85rem;font-weight:600;align-items:center;gap:6px}.nav-toggle{display:none}}
+    .process-detail { display: flex; flex-direction: column; gap: 0; }
+    .process-detail-item { display: flex; gap: 24px; padding: 28px 0; position: relative; }
+    .process-detail-item:not(:last-child)::after { content: ''; position: absolute; left: 27px; top: 72px; width: 2px; height: calc(100% - 28px); background: var(--border); }
+    .process-step-num { width: 54px; height: 54px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 12px rgba(26,58,92,0.25); position: relative; z-index: 1; }
+    .process-detail-content { flex: 1; padding-top: 8px; }
+    .process-detail-content h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 8px; }
+    .process-detail-content p { font-size: 0.88rem; color: var(--text-mid); line-height: 1.8; }
+    .process-meta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .process-meta-tag { display: flex; align-items: center; gap: 5px; background: var(--bg-light); border: 1px solid var(--border); padding: 4px 12px; border-radius: 100px; font-size: 0.78rem; color: var(--text-mid); }
+    .process-meta-tag i { color: var(--primary); font-size: 0.75rem; }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a3a5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="청솔행정사">
+</head>
+<body>
+<header id="header">
+  <div class="header-inner">
+    <a href="index.html" class="logo"><div class="logo-icon"><i class="fas fa-balance-scale"></i></div><div class="logo-text"><div class="logo-name">청솔행정사사무소</div><div class="logo-sub">기업민원·행정대행 전문</div></div></a>
+    <button class="nav-toggle" id="navToggle" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="index.html"><i class="fas fa-home menu-icon"></i>홈</a></li>
+    <li><a href="about.html"><i class="fas fa-user-tie menu-icon"></i>행정사 소개</a></li>
+    <li><a href="services.html"><i class="fas fa-th-large menu-icon"></i>서비스 안내</a></li>
+    <li><a href="apply.html"><i class="fas fa-edit menu-icon"></i>민원대행 신청</a></li>
+    <li><a href="process.html"><i class="fas fa-tasks menu-icon"></i>진행절차</a></li>
+    <li><a href="faq.html"><i class="fas fa-question-circle menu-icon"></i>FAQ</a></li>
+    <li><a href="notice.html"><i class="fas fa-bullhorn menu-icon"></i>공지사항</a></li>
+    <li><a href="contact.html"><i class="fas fa-phone menu-icon"></i>문의하기</a></li>
+    <li><a href="admin.html"><i class="fas fa-lock menu-icon"></i>관리자</a></li>
+  </ul>
+  <a href="apply.html" class="mobile-menu-cta"><i class="fas fa-edit"></i> 민원대행 신청하기</a>
+</div>
+
+<section class="page-hero">
+  <h1>업무 진행 절차</h1>
+  <p>온라인 접수부터 완료까지, 투명하게 진행됩니다.</p>
+  <div class="breadcrumb"><a href="index.html">홈</a><i class="fas fa-chevron-right"></i><span>진행절차</span></div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header anim">
+      <h2>5단계 진행 프로세스</h2>
+      <p>접수 후 단계별로 고객과 소통하며 투명하게 진행합니다.</p>
+      <div class="section-line"></div>
+    </div>
+    <div class="process-detail">
+      <div class="process-detail-item anim">
+        <div class="process-step-num">1</div>
+        <div class="process-detail-content">
+          <h3>온라인 신청 접수</h3>
+          <p>홈페이지에서 업무 카테고리를 선택하고 신청서를 작성합니다. 관련 서류가 있으면 첨부하시고, 없으셔도 접수가 가능합니다. 접수 즉시 접수번호가 발급됩니다.</p>
+          <div class="process-meta">
+            <span class="process-meta-tag"><i class="fas fa-clock"></i> 24시간 접수 가능</span>
+            <span class="process-meta-tag"><i class="fas fa-file-alt"></i> 접수번호 즉시 발급</span>
+            <span class="process-meta-tag"><i class="fas fa-envelope"></i> 접수 확인 메일 발송</span>
+          </div>
+        </div>
+      </div>
+      <div class="process-detail-item anim">
+        <div class="process-step-num">2</div>
+        <div class="process-detail-content">
+          <h3>담당자 검토 및 연락</h3>
+          <p>접수된 내용을 담당 행정사가 직접 검토합니다. 영업일 기준 24시간 이내에 전화 또는 이메일로 연락드리며, 업무 성격과 필요 서류, 예상 비용 범위를 안내해 드립니다.</p>
+          <div class="process-meta">
+            <span class="process-meta-tag"><i class="fas fa-clock"></i> 영업일 24시간 내 연락</span>
+            <span class="process-meta-tag"><i class="fas fa-exclamation-circle"></i> 긴급 건은 당일 처리</span>
+          </div>
+        </div>
+      </div>
+      <div class="process-detail-item anim">
+        <div class="process-step-num">3</div>
+        <div class="process-detail-content">
+          <h3>필요 서류 안내 및 상담</h3>
+          <p>업무 처리에 필요한 서류 목록과 예상 비용을 안내드립니다. 부족한 서류가 있을 경우 어떻게 발급받는지도 함께 안내드리며, 상담 후 수임 여부를 결정하시면 됩니다.</p>
+          <div class="process-meta">
+            <span class="process-meta-tag"><i class="fas fa-list"></i> 서류 목록 상세 안내</span>
+            <span class="process-meta-tag"><i class="fas fa-calculator"></i> 예상 비용 안내</span>
+            <span class="process-meta-tag"><i class="fas fa-phone"></i> 전화/이메일 상담</span>
+          </div>
+        </div>
+      </div>
+      <div class="process-detail-item anim">
+        <div class="process-step-num">4</div>
+        <div class="process-detail-content">
+          <h3>수임 계약 및 업무 착수</h3>
+          <p>수임 동의 후 계약이 체결되면 업무에 착수합니다. 진행 과정에서 추가 서류가 필요하거나 관할 기관의 보완 요청이 있을 경우 즉시 안내드리고 대응합니다.</p>
+          <div class="process-meta">
+            <span class="process-meta-tag"><i class="fas fa-handshake"></i> 수임 계약 후 착수</span>
+            <span class="process-meta-tag"><i class="fas fa-sync"></i> 보완 요청 즉각 대응</span>
+          </div>
+        </div>
+      </div>
+      <div class="process-detail-item anim" style="padding-bottom:0;">
+        <div class="process-step-num" style="background:var(--success);">✓</div>
+        <div class="process-detail-content">
+          <h3>완료 및 결과 전달</h3>
+          <p>업무가 완료되면 처리 결과와 관련 서류를 전달드립니다. 이후 추가 보완이 필요한 사항이 있으면 사후 지원도 제공합니다.</p>
+          <div class="process-meta">
+            <span class="process-meta-tag"><i class="fas fa-check"></i> 결과 서류 전달</span>
+            <span class="process-meta-tag"><i class="fas fa-headset"></i> 사후 지원 제공</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 상태값 안내 -->
+<section class="section" style="background:var(--bg-light);">
+  <div class="container">
+    <div class="section-header anim">
+      <h2>접수 상태 안내</h2>
+      <p>접수 후 처리 단계별 상태를 안내드립니다.</p>
+      <div class="section-line"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;" class="anim">
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-접수완료">접수완료</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">신청서 접수 완료</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-검토중">검토중</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">담당자 검토 진행 중</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-보완요청">보완요청</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">추가 서류/정보 요청</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-상담진행">상담진행</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">담당자 상담 진행 중</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-수임확정">수임확정</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">계약 체결 및 업무 착수</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-진행중">진행중</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">업무 처리 진행 중</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-완료">완료</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">업무 처리 완료</span>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-md);padding:16px;display:flex;align-items:center;gap:12px;">
+        <span class="badge badge-종결">종결</span>
+        <span style="font-size:0.83rem;color:var(--text-mid);">종결 처리</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact-banner">
+  <div class="container">
+    <h2>지금 바로 신청하세요</h2>
+    <p>절차가 복잡해 보여도 담당자가 처음부터 끝까지 안내해드립니다.</p>
+    <div class="contact-btns">
+      <a href="apply.html" class="btn" style="background:white;color:var(--accent);font-weight:700;padding:14px 32px;border-radius:8px;"><i class="fas fa-edit"></i> 민원대행 신청하기</a>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-bottom">
+      <span>© 2025 청솔행정사사무소. All rights reserved.</span>
+      <div class="footer-bottom-links"><a href="#">개인정보처리방침</a><a href="#">이용약관</a></div>
+    </div>
+  </div>
+</footer>
+<div class="floating-cta">
+  <a href="apply.html" class="floating-cta-btn primary-btn"><i class="fas fa-edit"></i> 신청하기</a>
+  <a href="tel:010-7128-8192" class="floating-cta-btn phone-btn"><i class="fas fa-phone"></i></a>
+</div>
+<script src="js/common.js"></script>
+</body>
+</html>

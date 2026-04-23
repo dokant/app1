@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>관리자 | 청솔행정사사무소</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: var(--bg-light); }
+    .admin-view { display: none; }
+    .admin-view.active { display: flex; }
+    /* Login */
+    .login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
+    .login-card { background: white; border-radius: var(--radius-lg); padding: 36px 28px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); text-align: center; }
+    .login-logo { margin-bottom: 24px; }
+    .login-logo .logo-icon { width: 52px; height: 52px; margin: 0 auto 8px; font-size: 1.4rem; border-radius: var(--radius-md); background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; }
+    /* Table responsive */
+    .table-wrap { overflow-x: auto; }
+    .data-table { min-width: 600px; }
+    /* Detail row */
+    .detail-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media(min-width:600px){ .detail-grid { grid-template-columns: 1fr 1fr; } }
+    .detail-field { }
+    .detail-label { font-size: 0.75rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+    .detail-value { font-size: 0.88rem; color: var(--text-dark); font-weight: 500; }
+    .tab-bar { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+    .tab-btn { padding: 10px 18px; font-size: 0.88rem; font-weight: 600; color: var(--text-light); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: var(--transition); background: none; border-left: none; border-right: none; border-top: none; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+  </style>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a3a5c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="청솔행정사">
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon"><i class="fas fa-balance-scale"></i></div>
+      <div style="font-size:1rem;font-weight:700;color:var(--primary);">청솔행정사사무소</div>
+      <div style="font-size:0.78rem;color:var(--text-light);">관리자 페이지</div>
+    </div>
+    <form onsubmit="doLogin(); return false;">
+    <div class="form-group">
+      <label class="form-label">관리자 ID</label>
+      <input type="text" id="loginId" class="form-control" placeholder="admin" value="admin" autocomplete="username">
+    </div>
+    <div class="form-group" style="margin-bottom:24px;">
+      <label class="form-label">비밀번호</label>
+      <input type="password" id="loginPw" class="form-control" placeholder="비밀번호 입력" value="1234" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">
+      <i class="fas fa-sign-in-alt"></i> 로그인
+    </button>
+    </form>
+    <p style="font-size:0.78rem;color:var(--text-light);margin-top:16px;">기본 계정: admin / 1234</p>
+  </div>
+</div>
+
+<!-- ===== ADMIN MAIN ===== -->
+<div id="adminMain" class="admin-view" style="flex-direction:column;min-height:100vh;">
+  <!-- Top bar -->
+  <header id="header" style="position:fixed;top:0;left:0;right:0;z-index:1000;">
+    <div class="header-inner">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="sidebar-toggle-btn" id="sidebarToggle" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i><span style="display:none;" class="d-sm-inline">메뉴</span>
+        </button>
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fas fa-balance-scale"></i></div>
+          <div class="logo-text"><div class="logo-name">청솔행정사사무소</div><div class="logo-sub">관리자</div></div>
+        </a>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:0.82rem;color:var(--text-light);">admin</span>
+        <button onclick="doLogout()" class="btn btn-outline btn-sm" style="color:var(--text-mid);border-color:var(--border);">
+          <i class="fas fa-sign-out-alt"></i> 로그아웃
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-layout" style="padding-top:64px;">
+    <!-- Sidebar -->
+    <nav class="admin-sidebar" id="adminSidebar">
+      <div class="sidebar-nav">
+        <div class="sidebar-section">대시보드</div>
+        <a href="#" class="sidebar-link active" onclick="showAdminTab('dashboard', this)">
+          <i class="fas fa-chart-bar"></i> 대시보드
+        </a>
+        <div class="sidebar-section">접수 관리</div>
+        <a href="#" class="sidebar-link" onclick="showAdminTab('applications', this)">
+          <i class="fas fa-inbox"></i> 전체 접수 목록
+        </a>
+        <a href="#" class="sidebar-link" onclick="showAdminTab('pending', this)">
+          <i class="fas fa-hourglass-half"></i> 검토 대기
+        </a>
+        <a href="#" class="sidebar-link" onclick="showAdminTab('inprogress', this)">
+          <i class="fas fa-spinner"></i> 진행 중
+        </a>
+        <a href="#" class="sidebar-link" onclick="showAdminTab('completed', this)">
+          <i class="fas fa-check-circle"></i> 완료
+        </a>
+        <div class="sidebar-section">콘텐츠</div>
+        <a href="#" class="sidebar-link" onclick="showAdminTab('notices', this)">
+          <i class="fas fa-bullhorn"></i> 공지사항 관리
+        </a>
+        <a href="#" class="sidebar-link" onclick="showAdminTab('faqs', this)">
+          <i class="fas fa-question-circle"></i> FAQ 관리
+        </a>
+        <div class="sidebar-section">사이트</div>
+        <a href="index.html" class="sidebar-link" target="_blank">
+          <i class="fas fa-external-link-alt"></i> 홈페이지 보기
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+
+      <!-- === 대시보드 === -->
+      <div id="tab-dashboard">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-chart-bar" style="margin-right:8px;color:var(--accent);"></i>대시보드</h2>
+          <button class="btn btn-primary btn-sm" onclick="loadDashboard()"><i class="fas fa-sync"></i> 새로고침</button>
+        </div>
+        <div class="stat-cards" id="statCards">
+          <div class="stat-card"><div class="stat-card-label">전체 접수</div><div class="stat-card-value" id="stat_total">-</div></div>
+          <div class="stat-card"><div class="stat-card-label">검토 대기</div><div class="stat-card-value" id="stat_pending" style="color:var(--warning);">-</div></div>
+          <div class="stat-card"><div class="stat-card-label">진행 중</div><div class="stat-card-value" id="stat_progress" style="color:var(--primary);">-</div></div>
+          <div class="stat-card"><div class="stat-card-label">완료</div><div class="stat-card-value" id="stat_done" style="color:var(--success);">-</div></div>
+        </div>
+        <!-- 최근 접수 -->
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h3>최근 접수 (10건)</h3>
+            <button class="btn btn-outline btn-sm" onclick="showAdminTab('applications', document.querySelector('.sidebar-link[onclick*=applications])'))">전체보기</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="recentTable">
+              <thead><tr><th>접수번호</th><th>카테고리</th><th>회사명</th><th>연락처</th><th>상태</th><th>접수일</th><th>관리</th></tr></thead>
+              <tbody id="recentBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <!-- 카테고리별 현황 -->
+        <div class="card">
+          <div class="card-header"><h3>카테고리별 접수 현황</h3></div>
+          <div class="card-body" id="catStats"></div>
+        </div>
+      </div>
+
+      <!-- === 전체 접수 목록 === -->
+      <div id="tab-applications" style="display:none;">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-inbox" style="margin-right:8px;color:var(--accent);"></i>전체 접수 목록</h2>
+        </div>
+        <div class="filter-bar">
+          <input type="text" class="form-control search-input" id="appSearch" placeholder="이름·회사·접수번호 검색..." oninput="filterApps()">
+          <select class="form-control" id="appStatusFilter" onchange="filterApps()" style="max-width:140px;">
+            <option value="">전체 상태</option>
+            <option>접수완료</option><option>검토중</option><option>보완요청</option>
+            <option>상담진행</option><option>수임확정</option><option>진행중</option>
+            <option>완료</option><option>종결</option>
+          </select>
+          <select class="form-control" id="appCatFilter" onchange="filterApps()" style="max-width:160px;">
+            <option value="">전체 카테고리</option>
+            <option>인허가·등록·변경신고</option><option>조달·입찰·공공기관 서류</option>
+            <option>기업인증·기술행정</option><option>계약서·내용증명·사실확인</option>
+            <option>행정처분 대응·행정심판</option><option>출입국·비자·해외문서</option>
+            <option>일반문의</option>
+          </select>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>접수번호</th><th>구분</th><th>카테고리</th><th>회사명</th><th>연락처</th><th>긴급</th><th>상태</th><th>접수일</th><th>관리</th></tr></thead>
+              <tbody id="appTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="appPagination" style="display:flex;justify-content:center;gap:6px;margin-top:16px;"></div>
+      </div>
+
+      <!-- === 검토 대기 === -->
+      <div id="tab-pending" style="display:none;">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-hourglass-half" style="margin-right:8px;color:var(--warning);"></i>검토 대기</h2>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>접수번호</th><th>카테고리</th><th>회사명</th><th>연락처</th><th>긴급</th><th>상태</th><th>접수일</th><th>관리</th></tr></thead>
+              <tbody id="pendingBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 진행 중 === -->
+      <div id="tab-inprogress" style="display:none;">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-spinner" style="margin-right:8px;color:var(--primary);"></i>진행 중</h2>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>접수번호</th><th>카테고리</th><th>회사명</th><th>연락처</th><th>상태</th><th>접수일</th><th>관리</th></tr></thead>
+              <tbody id="inprogressBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 완료 === -->
+      <div id="tab-completed" style="display:none;">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-check-circle" style="margin-right:8px;color:var(--success);"></i>완료된 접수</h2>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>접수번호</th><th>카테고리</th><th>회사명</th><th>연락처</th><th>상태</th><th>접수일</th><th>관리</th></tr></thead>
+              <tbody id="completedBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- === 공지사항 관리 === -->
+      <div id="tab-notices" style="display:none;">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-bullhorn" style="margin-right:8px;color:var(--accent);"></i>공지사항 관리</h2>
+          <button class="btn btn-primary btn-sm" onclick="openNoticeForm()"><i class="fas fa-plus"></i> 새 공지 작성</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>구분</th><th>제목</th><th>작성일</th><th>조회수</th><th>관리</th></tr></thead>
+              <tbody id="noticeAdminBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- === FAQ 관리 === -->
+      <div id="tab-faqs" style="display:none;">
+        <div class="admin-topbar">
+          <h2><i class="fas fa-question-circle" style="margin-right:8px;color:var(--accent);"></i>FAQ 관리</h2>
+          <button class="btn btn-primary btn-sm" onclick="openFaqForm()"><i class="fas fa-plus"></i> 새 FAQ 추가</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>순서</th><th>카테고리</th><th>질문</th><th>관리</th></tr></thead>
+              <tbody id="faqAdminBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== 접수 상세 모달 ===== -->
+<div class="modal-overlay" id="appDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="detailModalTitle">접수 상세</h3>
+      <button class="modal-close" onclick="closeModal('appDetailModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="appDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('appDetailModal')">닫기</button>
+      <button class="btn btn-primary btn-sm" id="saveDetailBtn">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 공지사항 작성/수정 모달 ===== -->
+<div class="modal-overlay" id="noticeFormModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="noticeFTitle">공지사항 작성</h3>
+      <button class="modal-close" onclick="closeModal('noticeFormModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="nf_id">
+      <div class="form-group">
+        <label class="form-label">구분 <span class="required">*</span></label>
+        <select id="nf_type" class="form-control">
+          <option value="공지">공지</option>
+          <option value="자료실">자료실</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">제목 <span class="required">*</span></label>
+        <input type="text" id="nf_title" class="form-control" placeholder="공지 제목">
+      </div>
+      <div class="form-group">
+        <label class="form-label">내용 <span class="required">*</span></label>
+        <textarea id="nf_content" class="form-control" rows="6" placeholder="내용을 입력하세요"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">첨부파일명 <span style="font-size:0.75rem;color:var(--text-light);">(선택)</span></label>
+        <input type="text" id="nf_file" class="form-control" placeholder="파일명.pdf">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('noticeFormModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="saveNotice()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FAQ 작성/수정 모달 ===== -->
+<div class="modal-overlay" id="faqFormModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="faqFTitle">FAQ 추가</h3>
+      <button class="modal-close" onclick="closeModal('faqFormModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ff_id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">카테고리</label>
+          <input type="text" id="ff_category" class="form-control" placeholder="예: 접수문의">
+        </div>
+        <div class="form-group">
+          <label class="form-label">정렬 순서</label>
+          <input type="number" id="ff_sort" class="form-control" placeholder="1" value="10">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">질문 <span class="required">*</span></label>
+        <input type="text" id="ff_question" class="form-control" placeholder="질문을 입력하세요">
+      </div>
+      <div class="form-group">
+        <label class="form-label">답변 <span class="required">*</span></label>
+        <textarea id="ff_answer" class="form-control" rows="5" placeholder="답변을 입력하세요"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('faqFormModal')">취소</button>
+      <button class="btn btn-primary btn-sm" onclick="saveFaq()">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/common.js"></script>
+<script>
+// ===== 로그인 =====
+const ADMIN_ID = 'admin';
+const ADMIN_PW = '1234';
+let isLoggedIn = sessionStorage.getItem('admin_logged') === 'true';
+
+function doLogin() {
+  const id = document.getElementById('loginId').value;
+  const pw = document.getElementById('loginPw').value;
+  if (id === ADMIN_ID && pw === ADMIN_PW) {
+    sessionStorage.setItem('admin_logged', 'true');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminMain').classList.add('active');
+    loadDashboard();
+    loadAllData();
+  } else {
+    showToast('아이디 또는 비밀번호가 올바르지 않습니다.', 'error');
+  }
+}
+
+// Enter key handled by form submit
+
+function doLogout() {
+  sessionStorage.removeItem('admin_logged');
+  document.getElementById('adminMain').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// 자동 로그인 확인
+if (isLoggedIn) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminMain').classList.add('active');
+}
+
+// ===== 사이드바 =====
+function toggleSidebar() {
+  document.getElementById('adminSidebar').classList.toggle('open');
+}
+
+// ===== 탭 전환 =====
+function showAdminTab(name, linkEl) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  document.getElementById('tab-' + name).style.display = 'block';
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+  // 탭별 데이터 로드
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'applications') renderAppTable();
+  if (name === 'pending') renderFilteredTable('pendingBody', a => ['접수완료','검토중','보완요청'].includes(a.status));
+  if (name === 'inprogress') renderFilteredTable('inprogressBody', a => ['상담진행','수임확정','진행중'].includes(a.status));
+  if (name === 'completed') renderFilteredTable('completedBody', a => ['완료','종결'].includes(a.status));
+  if (name === 'notices') loadNoticeAdmin();
+  if (name === 'faqs') loadFaqAdmin();
+  // 모바일 사이드바 닫기
+  document.getElementById('adminSidebar').classList.remove('open');
+}
+
+// ===== 데이터 =====
+let allApps = [], allNoticesAdmin = [], allFaqsAdmin = [];
+let filteredApps = [];
+let appPage = 1;
+const appPageSize = 15;
+
+async function loadAllData() {
+  try {
+    const [appData, noticeData, faqData] = await Promise.all([
+      API.get('applications', { limit: 1000 }),
+      API.get('notices', { limit: 100 }),
+      API.get('faqs', { limit: 100 })
+    ]);
+    allApps = (appData.data || []).sort((a,b) => (b.created_at||0) - (a.created_at||0));
+    filteredApps = [...allApps];
+    allNoticesAdmin = noticeData.data || [];
+    allFaqsAdmin = faqData.data || [];
+    loadDashboard();
+  } catch(e) {}
+}
+
+async function loadDashboard() {
+  if (!allApps.length) {
+    try {
+      const d = await API.get('applications', { limit: 1000 });
+      allApps = (d.data || []).sort((a,b) => (b.created_at||0) - (a.created_at||0));
+      filteredApps = [...allApps];
+    } catch(e) {}
+  }
+  document.getElementById('stat_total').textContent = allApps.length;
+  document.getElementById('stat_pending').textContent = allApps.filter(a => ['접수완료','검토중'].includes(a.status)).length;
+  document.getElementById('stat_progress').textContent = allApps.filter(a => ['상담진행','수임확정','진행중'].includes(a.status)).length;
+  document.getElementById('stat_done').textContent = allApps.filter(a => ['완료','종결'].includes(a.status)).length;
+
+  // 최근 10건
+  const recent = allApps.slice(0, 10);
+  document.getElementById('recentBody').innerHTML = recent.length ? recent.map(a => `
+    <tr>
+      <td style="font-size:0.8rem;font-family:monospace;">${a.app_number || '-'}</td>
+      <td style="font-size:0.82rem;">${(a.category||'').substring(0,10)}</td>
+      <td style="font-size:0.85rem;font-weight:600;">${a.company_name || '-'}</td>
+      <td style="font-size:0.82rem;">${a.phone || '-'}</td>
+      <td>${statusBadge(a.status)}${a.is_urgent ? ' <span class="badge badge-urgent">긴급</span>' : ''}</td>
+      <td style="font-size:0.8rem;">${formatDate(a.created_at)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="openDetail('${a.id}')">상세</button></td>
+    </tr>
+  `).join('') : '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-light);">접수 내역이 없습니다.</td></tr>';
+
+  // 카테고리별 현황
+  const catCount = {};
+  allApps.forEach(a => { catCount[a.category] = (catCount[a.category] || 0) + 1; });
+  const catEl = document.getElementById('catStats');
+  catEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+    ${Object.entries(catCount).map(([cat,cnt]) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg-light);border-radius:6px;font-size:0.85rem;">
+        <span style="color:var(--text-mid);">${cat}</span>
+        <strong style="color:var(--primary);">${cnt}건</strong>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+// ===== 접수 목록 =====
+function filterApps() {
+  const q = document.getElementById('appSearch').value.toLowerCase();
+  const status = document.getElementById('appStatusFilter').value;
+  const cat = document.getElementById('appCatFilter').value;
+  filteredApps = allApps.filter(a => {
+    const matchQ = !q || (a.app_number||'').toLowerCase().includes(q) || (a.company_name||'').toLowerCase().includes(q) || (a.manager_name||'').toLowerCase().includes(q);
+    const matchS = !status || a.status === status;
+    const matchC = !cat || a.category === cat;
+    return matchQ && matchS && matchC;
+  });
+  appPage = 1;
+  renderAppTable();
+}
+
+function renderAppTable() {
+  const start = (appPage - 1) * appPageSize;
+  const items = filteredApps.slice(start, start + appPageSize);
+  document.getElementById('appTableBody').innerHTML = items.length ? items.map(a => `
+    <tr>
+      <td style="font-size:0.8rem;font-family:monospace;">${a.app_number || '-'}</td>
+      <td style="font-size:0.82rem;">${a.applicant_type || '-'}</td>
+      <td style="font-size:0.82rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${(a.category||'').substring(0,8)}</td>
+      <td style="font-size:0.85rem;font-weight:600;">${a.company_name || '-'}</td>
+      <td style="font-size:0.82rem;">${a.phone || '-'}</td>
+      <td>${a.is_urgent ? '<span class="badge badge-urgent">긴급</span>' : '-'}</td>
+      <td>${statusBadge(a.status)}</td>
+      <td style="font-size:0.8rem;">${formatDate(a.created_at)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="openDetail('${a.id}')">상세</button></td>
+    </tr>
+  `).join('') : '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-light);">해당하는 접수 내역이 없습니다.</td></tr>';
+
+  // 페이지네이션
+  const total = filteredApps.length;
+  const pages = Math.ceil(total / appPageSize);
+  const pg = document.getElementById('appPagination');
+  if (pages <= 1) { pg.innerHTML = `<span style="font-size:0.82rem;color:var(--text-light);">총 ${total}건</span>`; return; }
+  let pgHtml = `<span style="font-size:0.82rem;color:var(--text-light);margin-right:8px;">총 ${total}건</span>`;
+  for (let i = 1; i <= pages; i++) {
+    pgHtml += `<button onclick="goAppPage(${i})" style="width:34px;height:34px;border-radius:6px;border:1.5px solid ${i===appPage?'var(--primary)':'var(--border)'};background:${i===appPage?'var(--primary)':'white'};color:${i===appPage?'white':'var(--text-dark)'};font-size:0.85rem;cursor:pointer;">${i}</button>`;
+  }
+  pg.innerHTML = pgHtml;
+}
+
+function goAppPage(p) { appPage = p; renderAppTable(); }
+
+function renderFilteredTable(tbodyId, filterFn) {
+  const items = allApps.filter(filterFn);
+  const el = document.getElementById(tbodyId);
+  el.innerHTML = items.length ? items.map(a => `
+    <tr>
+      <td style="font-size:0.8rem;font-family:monospace;">${a.app_number||'-'}</td>
+      <td style="font-size:0.82rem;">${(a.category||'').substring(0,10)}</td>
+      <td style="font-size:0.85rem;font-weight:600;">${a.company_name||'-'}</td>
+      <td style="font-size:0.82rem;">${a.phone||'-'}</td>
+      ${tbodyId === 'pendingBody' ? `<td>${a.is_urgent ? '<span class="badge badge-urgent">긴급</span>' : '-'}</td>` : ''}
+      <td>${statusBadge(a.status)}</td>
+      <td style="font-size:0.8rem;">${formatDate(a.created_at)}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="openDetail('${a.id}')">상세</button></td>
+    </tr>
+  `).join('') : `<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-light);">해당 상태의 접수가 없습니다.</td></tr>`;
+}
+
+// ===== 접수 상세 =====
+let currentDetailId = '';
+
+async function openDetail(id) {
+  const a = allApps.find(x => x.id === id);
+  if (!a) return;
+  currentDetailId = id;
+  document.getElementById('detailModalTitle').textContent = `접수 상세 - ${a.app_number || ''}`;
+
+  const statuses = ['접수완료','검토중','보완요청','상담진행','수임확정','진행중','완료','종결'];
+
+  document.getElementById('appDetailBody').innerHTML = `
+    <div class="detail-grid" style="margin-bottom:16px;">
+      <div class="detail-field"><div class="detail-label">접수번호</div><div class="detail-value" style="font-family:monospace;">${a.app_number||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">접수일시</div><div class="detail-value">${formatDateTime(a.created_at)}</div></div>
+      <div class="detail-field"><div class="detail-label">신청 구분</div><div class="detail-value">${a.applicant_type||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">긴급 여부</div><div class="detail-value">${a.is_urgent ? '<span class="badge badge-urgent">긴급</span>' : '일반'}</div></div>
+      <div class="detail-field"><div class="detail-label">회사명/성명</div><div class="detail-value">${a.company_name||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">담당자</div><div class="detail-value">${a.manager_name||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">연락처</div><div class="detail-value"><a href="tel:${a.phone}" style="color:var(--primary);">${a.phone||'-'}</a></div></div>
+      <div class="detail-field"><div class="detail-label">이메일</div><div class="detail-value"><a href="mailto:${a.email}" style="color:var(--primary);">${a.email||'-'}</a></div></div>
+      <div class="detail-field"><div class="detail-label">업종</div><div class="detail-value">${a.business_type||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">사업자등록번호</div><div class="detail-value">${a.business_reg_no||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">카테고리</div><div class="detail-value">${a.category||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">세부 업무</div><div class="detail-value">${a.sub_service||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">희망 회신</div><div class="detail-value">${a.reply_method||'-'}</div></div>
+      <div class="detail-field"><div class="detail-label">마감기한</div><div class="detail-value">${a.deadline||'-'}</div></div>
+    </div>
+    <hr class="divider">
+    <div class="form-group">
+      <div class="detail-label" style="margin-bottom:6px;">의뢰 내용</div>
+      <div style="background:var(--bg-light);padding:14px;border-radius:var(--radius-sm);font-size:0.87rem;color:var(--text-mid);line-height:1.8;white-space:pre-wrap;">${a.content||'-'}</div>
+    </div>
+    ${a.current_status ? `<div class="form-group"><div class="detail-label" style="margin-bottom:6px;">현재 상황</div><div style="font-size:0.87rem;color:var(--text-mid);">${a.current_status}</div></div>` : ''}
+    <hr class="divider">
+    <div class="form-group">
+      <label class="form-label">처리 상태 변경</label>
+      <select id="detailStatus" class="form-control">
+        ${statuses.map(s => `<option value="${s}" ${a.status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">관리자 메모</label>
+      <textarea id="detailMemo" class="form-control" rows="4" placeholder="고객 회신 내용, 진행 현황 등을 기록하세요">${a.admin_memo||''}</textarea>
+    </div>
+  `;
+
+  document.getElementById('saveDetailBtn').onclick = () => saveDetail(id);
+  openModal('appDetailModal');
+}
+
+async function saveDetail(id) {
+  const status = document.getElementById('detailStatus').value;
+  const memo = document.getElementById('detailMemo').value;
+  try {
+    await API.update('applications', id, { status, admin_memo: memo });
+    const app = allApps.find(a => a.id === id);
+    if (app) { app.status = status; app.admin_memo = memo; }
+    closeModal('appDetailModal');
+    showToast('저장되었습니다.', 'success');
+    loadDashboard();
+  } catch(e) {
+    showToast('저장 중 오류가 발생했습니다.', 'error');
+  }
+}
+
+// ===== 공지사항 관리 =====
+async function loadNoticeAdmin() {
+  try {
+    const d = await API.get('notices', { limit: 100 });
+    allNoticesAdmin = (d.data || []).sort((a,b) => (b.created_at||0) - (a.created_at||0));
+    renderNoticeAdmin();
+  } catch(e) {}
+}
+
+function renderNoticeAdmin() {
+  const tb = document.getElementById('noticeAdminBody');
+  tb.innerHTML = allNoticesAdmin.length ? allNoticesAdmin.map(n => `
+    <tr>
+      <td><span class="badge badge-${n.type}">${n.type}</span></td>
+      <td style="font-size:0.88rem;font-weight:500;">${n.title}</td>
+      <td style="font-size:0.82rem;">${n.post_date||formatDate(n.created_at)}</td>
+      <td style="font-size:0.82rem;">${n.views||0}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="openNoticeForm('${n.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm" style="background:#fff5f5;color:var(--danger);border:1px solid #fed7d7;" onclick="deleteNotice('${n.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text-light);">공지사항이 없습니다.</td></tr>';
+}
+
+function openNoticeForm(id) {
+  if (id && id !== 'undefined') {
+    const n = allNoticesAdmin.find(x => x.id === id);
+    if (n) {
+      document.getElementById('nf_id').value = n.id;
+      document.getElementById('nf_type').value = n.type;
+      document.getElementById('nf_title').value = n.title;
+      document.getElementById('nf_content').value = n.content || '';
+      document.getElementById('nf_file').value = n.file_name || '';
+      document.getElementById('noticeFTitle').textContent = '공지사항 수정';
+    }
+  } else {
+    document.getElementById('nf_id').value = '';
+    document.getElementById('nf_type').value = '공지';
+    document.getElementById('nf_title').value = '';
+    document.getElementById('nf_content').value = '';
+    document.getElementById('nf_file').value = '';
+    document.getElementById('noticeFTitle').textContent = '새 공지 작성';
+  }
+  openModal('noticeFormModal');
+}
+
+async function saveNotice() {
+  const id = document.getElementById('nf_id').value;
+  const data = {
+    type: document.getElementById('nf_type').value,
+    title: document.getElementById('nf_title').value.trim(),
+    content: document.getElementById('nf_content').value,
+    file_name: document.getElementById('nf_file').value,
+    author: 'admin',
+    post_date: new Date().toISOString().split('T')[0],
+    views: 0
+  };
+  if (!data.title || !data.content) { showToast('제목과 내용을 입력해 주세요.', 'error'); return; }
+  try {
+    if (id) {
+      await API.update('notices', id, data);
+      showToast('공지사항이 수정되었습니다.', 'success');
+    } else {
+      await API.create('notices', data);
+      showToast('공지사항이 등록되었습니다.', 'success');
+    }
+    closeModal('noticeFormModal');
+    loadNoticeAdmin();
+  } catch(e) {
+    showToast('저장 중 오류가 발생했습니다.', 'error');
+  }
+}
+
+async function deleteNotice(id) {
+  if (!confirm('이 공지사항을 삭제하시겠습니까?')) return;
+  try {
+    await API.delete('notices', id);
+    showToast('삭제되었습니다.', 'success');
+    loadNoticeAdmin();
+  } catch(e) {
+    showToast('삭제 중 오류가 발생했습니다.', 'error');
+  }
+}
+
+// ===== FAQ 관리 =====
+async function loadFaqAdmin() {
+  try {
+    const d = await API.get('faqs', { limit: 100, sort: 'sort_order' });
+    allFaqsAdmin = d.data || [];
+    renderFaqAdmin();
+  } catch(e) {}
+}
+
+function renderFaqAdmin() {
+  const tb = document.getElementById('faqAdminBody');
+  tb.innerHTML = allFaqsAdmin.length ? allFaqsAdmin.map(f => `
+    <tr>
+      <td style="font-size:0.82rem;">${f.sort_order||'-'}</td>
+      <td><span class="badge badge-접수완료" style="font-size:0.75rem;">${f.category||'-'}</span></td>
+      <td style="font-size:0.88rem;font-weight:500;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.question}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn btn-outline btn-sm" onclick="openFaqForm('${f.id}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm" style="background:#fff5f5;color:var(--danger);border:1px solid #fed7d7;" onclick="deleteFaq('${f.id}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>
+  `).join('') : '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--text-light);">FAQ가 없습니다.</td></tr>';
+}
+
+function openFaqForm(id) {
+  if (id && id !== 'undefined') {
+    const f = allFaqsAdmin.find(x => x.id === id);
+    if (f) {
+      document.getElementById('ff_id').value = f.id;
+      document.getElementById('ff_category').value = f.category||'';
+      document.getElementById('ff_sort').value = f.sort_order||10;
+      document.getElementById('ff_question').value = f.question||'';
+      document.getElementById('ff_answer').value = f.answer||'';
+      document.getElementById('faqFTitle').textContent = 'FAQ 수정';
+    }
+  } else {
+    document.getElementById('ff_id').value = '';
+    document.getElementById('ff_category').value = '';
+    document.getElementById('ff_sort').value = 10;
+    document.getElementById('ff_question').value = '';
+    document.getElementById('ff_answer').value = '';
+    document.getElementById('faqFTitle').textContent = '새 FAQ 추가';
+  }
+  openModal('faqFormModal');
+}
+
+async function saveFaq() {
+  const id = document.getElementById('ff_id').value;
+  const data = {
+    category: document.getElementById('ff_category').value,
+    sort_order: parseInt(document.getElementById('ff_sort').value)||10,
+    question: document.getElementById('ff_question').value.trim(),
+    answer: document.getElementById('ff_answer').value
+  };
+  if (!data.question || !data.answer) { showToast('질문과 답변을 입력해 주세요.', 'error'); return; }
+  try {
+    if (id) { await API.update('faqs', id, data); showToast('수정되었습니다.', 'success'); }
+    else { await API.create('faqs', data); showToast('FAQ가 추가되었습니다.', 'success'); }
+    closeModal('faqFormModal');
+    loadFaqAdmin();
+  } catch(e) {
+    showToast('저장 중 오류가 발생했습니다.', 'error');
+  }
+}
+
+async function deleteFaq(id) {
+  if (!confirm('이 FAQ를 삭제하시겠습니까?')) return;
+  try {
+    await API.delete('faqs', id);
+    showToast('삭제되었습니다.', 'success');
+    loadFaqAdmin();
+  } catch(e) { showToast('삭제 중 오류가 발생했습니다.', 'error'); }
+}
+
+// ===== 초기화 =====
+document.addEventListener('DOMContentLoaded', () => {
+  if (isLoggedIn) {
+    loadAllData();
+  }
+  // 첫 탭 표시
+  document.getElementById('tab-dashboard').style.display = 'block';
+});
+</script>
+</body>
+</html>
