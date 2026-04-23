@@ -2,47 +2,71 @@
    행정사사무소 - 공통 JavaScript
    =========================== */
 
-// ===== API Helpers =====
-const API = {
-  base: 'tables',
+// ===== API Helpers (Google Sheets Backend) =====
+const GAS_WEBHOOK_URL = (() => {
+  try {
+    const stored = localStorage.getItem('cheongsol_gas_webhook_url');
+    if (stored && stored.startsWith('https://script.google.com/macros/')) return stored;
+  } catch(e) {}
+  return '';
+})();
 
+const API = {
   async get(table, params = {}) {
-    const query = new URLSearchParams(params).toString();
-    const url = `${this.base}/${table}${query ? '?' + query : ''}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('API 오류');
-    return res.json();
+    if (!GAS_WEBHOOK_URL) return { data: [] };
+    try {
+      const url = new URL(GAS_WEBHOOK_URL);
+      url.searchParams.append('table', table);
+      const res = await fetch(url.toString());
+      const json = await res.json();
+      return { data: json.data || [] };
+    } catch(e) {
+      console.error(e);
+      return { data: [] };
+    }
   },
 
   async getOne(table, id) {
-    const res = await fetch(`${this.base}/${table}/${id}`);
-    if (!res.ok) throw new Error('API 오류');
-    return res.json();
+    const all = await this.get(table);
+    const item = all.data.find(x => x.id === id);
+    if (!item) throw new Error('Not found');
+    return item;
   },
 
-  async create(table, data) {
-    const res = await fetch(`${this.base}/${table}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('API 오류');
-    return res.json();
+  async create(table, payload) {
+    if (!GAS_WEBHOOK_URL) {
+      console.warn('GAS_WEBHOOK_URL 미설정 - 저장 안됨');
+      return payload;
+    }
+    try {
+      await fetch(GAS_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'create', table: table, ...payload })
+      });
+      return payload;
+    } catch(e) {
+      console.error(e);
+      throw e;
+    }
   },
 
-  async update(table, id, data) {
-    const res = await fetch(`${this.base}/${table}/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    if (!res.ok) throw new Error('API 오류');
-    return res.json();
+  async update(table, id, payload) {
+    if (!GAS_WEBHOOK_URL) return payload;
+    try {
+      await fetch(GAS_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'update', table: table, id: id, payload: payload })
+      });
+      return payload;
+    } catch(e) {
+      console.error(e);
+      throw e;
+    }
   },
 
   async delete(table, id) {
-    const res = await fetch(`${this.base}/${table}/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error('API 오류');
     return true;
   }
 };

@@ -606,44 +606,7 @@ function buildSummary() {
   </table>`;
 }
 
-// ===================================================
-// ★ Google Apps Script 웹훅 URL 설정
-//   방법 1) 아래 URL을 실제 GAS 배포 URL로 직접 교체 (영구 적용, 권장)
-//   방법 2) gas-setup.html 에서 URL을 입력하면 localStorage에 저장됩니다.
-//   자세한 설정 방법은 gas-setup.html 을 참조하세요.
-// ===================================================
-const GAS_WEBHOOK_URL_HARDCODED = 'YOUR_GAS_WEBHOOK_URL_HERE';
 
-// localStorage에 저장된 URL이 있으면 우선 사용 (gas-setup.html 에서 설정)
-const GAS_WEBHOOK_URL = (() => {
-  try {
-    const stored = localStorage.getItem('cheongsol_gas_webhook_url');
-    if (stored && stored.startsWith('https://script.google.com/macros/')) return stored;
-  } catch(e) {}
-  return GAS_WEBHOOK_URL_HARDCODED;
-})();
-
-// GAS 웹훅으로 이메일 알림 전송 (실패해도 접수는 정상 완료)
-async function sendEmailNotification(payload) {
-  if (!GAS_WEBHOOK_URL || GAS_WEBHOOK_URL === 'YOUR_GAS_WEBHOOK_URL_HERE') {
-    console.warn('[이메일 알림] GAS 웹훅 URL이 설정되지 않았습니다. gas-setup.html 을 참조하세요.');
-    return { ok: false, reason: 'no_url' };
-  }
-  try {
-    // GAS는 CORS 제한이 있어 no-cors 모드로 전송 (fire-and-forget)
-    await fetch(GAS_WEBHOOK_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    console.log('[이메일 알림] GAS 웹훅 전송 완료');
-    return { ok: true };
-  } catch (err) {
-    console.error('[이메일 알림] 웹훅 전송 실패:', err);
-    return { ok: false, reason: err.message };
-  }
-}
 
 // ===== 신청서 제출 =====
 async function submitApplication() {
@@ -686,25 +649,7 @@ async function submitApplication() {
     // 1) 테이블 API 저장 (주 데이터 저장)
     await API.create('applications', payload);
 
-    // 2) GAS 웹훅으로 이메일 알림 전송 (비동기, 실패해도 접수 완료)
-    sendEmailNotification({
-      type: 'new_application',
-      app_number: appNumber,
-      submitted_at: submittedAt,
-      is_urgent: payload.is_urgent,
-      category: payload.category,
-      sub_service: payload.sub_service,
-      applicant_type: payload.applicant_type,
-      company_name: payload.company_name,
-      manager_name: payload.manager_name,
-      phone: payload.phone,
-      email: payload.email,
-      business_type: payload.business_type,
-      content: payload.content,
-      deadline: payload.deadline,
-      reply_method: payload.reply_method,
-      notify_to: 'cirrus01@naver.com'
-    });
+
 
     document.getElementById('appNumberDisplay').textContent = '접수번호: ' + appNumber;
     currentStep = 5;
