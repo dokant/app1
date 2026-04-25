@@ -2,20 +2,20 @@
    행정사사무소 - 공통 JavaScript
    =========================== */
 
-// ===== API Helpers (Google Sheets Backend) =====
-const GAS_WEBHOOK_URL = (() => {
-  try {
-    const stored = localStorage.getItem('cheongsol_gas_webhook_url');
-    if (stored && stored.startsWith('https://script.google.com/macros/')) return stored;
-  } catch(e) {}
-  return '';
-})();
-
 const API = {
-  async get(table, params = {}) {
-    if (!GAS_WEBHOOK_URL) return { data: [] };
+  getGasUrl() {
     try {
-      const url = new URL(GAS_WEBHOOK_URL);
+      const stored = localStorage.getItem('cheongsol_gas_webhook_url');
+      if (stored && stored.startsWith('https://script.google.com/macros/')) return stored;
+    } catch(e) {}
+    return '';
+  },
+
+  async get(table, params = {}) {
+    const urlStr = this.getGasUrl();
+    if (!urlStr) return { data: [] };
+    try {
+      const url = new URL(urlStr);
       url.searchParams.append('table', table);
       const res = await fetch(url.toString());
       const json = await res.json();
@@ -34,12 +34,12 @@ const API = {
   },
 
   async create(table, payload) {
-    if (!GAS_WEBHOOK_URL) {
-      console.warn('GAS_WEBHOOK_URL 미설정 - 저장 안됨');
-      return payload;
+    const urlStr = this.getGasUrl();
+    if (!urlStr) {
+      throw new Error('GAS_WEBHOOK_URL이 설정되지 않았습니다. gas-setup.html 메뉴에서 앱 연동을 먼저 진행해 주세요.');
     }
     try {
-      const url = new URL(GAS_WEBHOOK_URL);
+      const url = new URL(urlStr);
       url.searchParams.append('action', 'create');
       url.searchParams.append('table', table);
       url.searchParams.append('data', JSON.stringify(payload));
@@ -47,13 +47,37 @@ const API = {
       const res = await fetch(url.toString(), { method: 'GET' });
       const json = await res.json();
       
-      if (json.status === 'error') {
-        throw new Error('GAS 서버 오류: ' + json.message);
+      if (json.status !== 'ok') {
+        throw new Error('스크립트 정상 응답 실패 (응답: ' + JSON.stringify(json) + ') - GAS 스크립트가 최신 배포버전이 아닙니다.');
       }
       return payload;
     } catch(e) {
       console.error(e);
-      window.alert("상세 에러 원인: " + e.message); 
+      window.alert("상세 원인: " + e.message); 
+      throw e;
+    }
+  },
+
+  async update(table, id, payload) {
+    const urlStr = this.getGasUrl();
+    if (!urlStr) throw new Error('GAS_WEBHOOK_URL 미설정');
+    try {
+      const url = new URL(urlStr);
+      url.searchParams.append('action', 'update');
+      url.searchParams.append('table', table);
+      url.searchParams.append('id', id);
+      url.searchParams.append('data', JSON.stringify(payload));
+
+      const res = await fetch(url.toString(), { method: 'GET' });
+      const json = await res.json();
+      
+      if (json.status !== 'ok') {
+        throw new Error('스크립트 정상 응답 실패 (응답: ' + JSON.stringify(json) + ')');
+      }
+      return payload;
+    } catch(e) {
+      console.error(e);
+      window.alert("상세 원인: " + e.message);
       throw e;
     }
   },
@@ -70,8 +94,8 @@ const API = {
       const res = await fetch(url.toString(), { method: 'GET' });
       const json = await res.json();
       
-      if (json.status === 'error') {
-        throw new Error('GAS 서버 오류: ' + json.message);
+      if (json.status !== 'ok') {
+        throw new Error('스크립트가 정상 응답하지 않았습니다 (응답내용: ' + JSON.stringify(json) + ') - 구글 스크립트 최신버전 배포가 필요합니다.');
       }
       return payload;
     } catch(e) {
