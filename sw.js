@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cheongsol-pwa-v2';
+const CACHE_NAME = 'cheongsol-pwa-v3';
 const urlsToCache = [
   '/',
   '/index.html',
