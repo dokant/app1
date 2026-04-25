@@ -228,8 +228,7 @@ function doGet(e) {
 
 function doPost(e) {
   try {
-    // 폼 데이터(x-www-form-urlencoded) 또는 텍스트/JSON 지원
-    const rawData = (e.parameter && e.parameter.data) ? e.parameter.data : e.postData.contents;
+    const rawData = (e.parameter && e.parameter.data) ? e.parameter.data : (e.postData ? e.postData.contents : "{}");
     const data = JSON.parse(rawData);
     
     const tableName = data.table || "Applications";
@@ -240,7 +239,13 @@ function doPost(e) {
       return jsonResponse({ status: 'ok', message: 'Updated' });
     } else {
       createApplication(sheet, data);
-      if (tableName === "Applications") sendNotificationEmail(data);
+      
+      try {
+        if (tableName === "Applications") sendNotificationEmail(data);
+      } catch (emailErr) {
+        // 이메일 권한 오류 등이 발생해도 엑셀 저장은 완료되도록 예외 처리
+      }
+      
       return jsonResponse({ status: 'ok', message: 'Created' });
     }
   } catch (err) {
@@ -263,7 +268,6 @@ function initSheet(sheetName, data) {
     sheet = ss.insertSheet(sheetName);
     sheet.appendRow(sheetName === "Applications" ? defaultHeaders : ["id", "created_at"]);
   } else {
-    // 시트가 존재하지만 첫 줄(헤더)이 비어있는 경우 복구
     const firstRow = sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0];
     if (!firstRow || !firstRow.join("").trim()) {
       sheet.getRange(1, 1, 1, defaultHeaders.length).setValues([defaultHeaders]);
@@ -274,7 +278,7 @@ function initSheet(sheetName, data) {
 
 function createApplication(sheet, d) {
   const lastCol = sheet.getLastColumn();
-  if (lastCol === 0) return; // 방어 코드
+  if (lastCol === 0) return;
   const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
   
   d.id = 'ID_' + new Date().getTime();
@@ -313,8 +317,12 @@ function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
+// 최초 1회 실행하여 모든 권한(스프레드시트, Gmail) 승인받기
 function setupAndTest() {
   initSheet("Applications");
+  try {
+    GmailApp.sendEmail(Session.getActiveUser().getEmail(), "청솔행정사 시스템 연동 완료", "구글 시트 및 이메일 알림 권한이 성공적으로 승인되었습니다.");
+  } catch(e) {}
 }</pre>
     </div>
   </div>
