@@ -207,25 +207,53 @@ function doOptions(e) {
   return ContentService.createTextOutput("").setMimeType(ContentService.MimeType.TEXT);
 }
 
+// 1. GET 요청 (모든 조회, 등록, 수정 처리 - CORS 완벽 우회)
 function doGet(e) {
-  const tableName = e.parameter.table || "Applications";
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(tableName);
-  if (!sheet) return jsonResponse({ data: [] });
-  
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return jsonResponse({ data: [] });
-  
-  const headers = data[0];
-  const rows = data.slice(1);
-  const result = rows.map(row => {
-    let obj = {};
-    headers.forEach((h, i) => { if(h) obj[h] = row[i]; });
-    return obj;
-  });
-  
-  return jsonResponse({ data: result });
+  try {
+    const action = e.parameter.action || "read";
+    const tableName = e.parameter.table || "Applications";
+    
+    if (action === "create" || action === "update") {
+      const dataStr = e.parameter.data;
+      if (!dataStr) return jsonResponse({ status: 'error', message: '데이터가 없습니다.' });
+      
+      const data = JSON.parse(dataStr);
+      const sheet = initSheet(tableName, data);
+      
+      if (action === "update") {
+        updateApplication(sheet, e.parameter.id || data.id, data.payload || data);
+        return jsonResponse({ status: 'ok', message: 'Updated' });
+      } else {
+        createApplication(sheet, data);
+        try {
+          if (tableName === "Applications") sendNotificationEmail(data);
+        } catch(emailErr) {}
+        return jsonResponse({ status: 'ok', message: 'Created' });
+      }
+    }
+    
+    // read 동작
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(tableName);
+    if (!sheet) return jsonResponse({ data: [] });
+    
+    const data = sheet.getDataRange().getValues();
+    if (data.length <= 1) return jsonResponse({ data: [] });
+    
+    const headers = data[0];
+    const rows = data.slice(1);
+    const result = rows.map(row => {
+      let obj = {};
+      headers.forEach((h, i) => { if(h) obj[h] = row[i]; });
+      return obj;
+    });
+    
+    return jsonResponse({ data: result });
+  } catch (err) {
+    return jsonResponse({ status: 'error', message: err.message });
+  }
 }
 
+// 2. POST 요청 (하위 호환성 유지)
 function doPost(e) {
   try {
     const rawData = (e.parameter && e.parameter.data) ? e.parameter.data : (e.postData ? e.postData.contents : "{}");
@@ -239,13 +267,9 @@ function doPost(e) {
       return jsonResponse({ status: 'ok', message: 'Updated' });
     } else {
       createApplication(sheet, data);
-      
       try {
         if (tableName === "Applications") sendNotificationEmail(data);
-      } catch (emailErr) {
-        // 이메일 권한 오류 등이 발생해도 엑셀 저장은 완료되도록 예외 처리
-      }
-      
+      } catch (emailErr) {}
       return jsonResponse({ status: 'ok', message: 'Created' });
     }
   } catch (err) {

@@ -39,18 +39,21 @@ const API = {
       return payload;
     }
     try {
-      const formData = new URLSearchParams();
-      formData.append('data', JSON.stringify({ action: 'create', table: table, ...payload }));
+      const url = new URL(GAS_WEBHOOK_URL);
+      url.searchParams.append('action', 'create');
+      url.searchParams.append('table', table);
+      url.searchParams.append('data', JSON.stringify(payload));
 
-      await fetch(GAS_WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString()
-      });
+      const res = await fetch(url.toString(), { method: 'GET' });
+      const json = await res.json();
+      
+      if (json.status === 'error') {
+        throw new Error('GAS 서버 오류: ' + json.message);
+      }
       return payload;
     } catch(e) {
       console.error(e);
+      window.alert("상세 에러 원인: " + e.message); 
       throw e;
     }
   },
@@ -58,18 +61,22 @@ const API = {
   async update(table, id, payload) {
     if (!GAS_WEBHOOK_URL) return payload;
     try {
-      const formData = new URLSearchParams();
-      formData.append('data', JSON.stringify({ action: 'update', table: table, id: id, payload: payload }));
+      const url = new URL(GAS_WEBHOOK_URL);
+      url.searchParams.append('action', 'update');
+      url.searchParams.append('table', table);
+      url.searchParams.append('id', id);
+      url.searchParams.append('data', JSON.stringify(payload));
 
-      await fetch(GAS_WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString()
-      });
+      const res = await fetch(url.toString(), { method: 'GET' });
+      const json = await res.json();
+      
+      if (json.status === 'error') {
+        throw new Error('GAS 서버 오류: ' + json.message);
+      }
       return payload;
     } catch(e) {
       console.error(e);
+      window.alert("상세 에러 원인: " + e.message);
       throw e;
     }
   },
