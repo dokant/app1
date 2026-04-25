@@ -202,12 +202,18 @@
 // ============================================================
 
 const NOTIFY_EMAIL = 'cirrus01@naver.com';
+const DB_HEADERS = [
+  "id", "app_number", "applicant_type", "company_name", "manager_name", 
+  "phone", "email", "business_type", "business_reg_no", "category", 
+  "sub_service", "content", "current_status", "deadline", "reply_method", 
+  "is_urgent", "status", "admin_memo", "created_at"
+];
 
 function doOptions(e) {
   return ContentService.createTextOutput("").setMimeType(ContentService.MimeType.TEXT);
 }
 
-// 1. GET 요청 (모든 조회, 등록, 수정 처리 - CORS 완벽 우회)
+// 1. GET 요청 (모든 조회, 등록, 수정 처리)
 function doGet(e) {
   try {
     const action = e.parameter.action || "read";
@@ -218,7 +224,7 @@ function doGet(e) {
       if (!dataStr) return jsonResponse({ status: 'error', message: '데이터가 없습니다.' });
       
       const data = JSON.parse(dataStr);
-      const sheet = initSheet(tableName, data);
+      const sheet = initSheet(tableName);
       
       if (action === "update") {
         updateApplication(sheet, e.parameter.id || data.id, data.payload || data);
@@ -239,11 +245,11 @@ function doGet(e) {
     const data = sheet.getDataRange().getValues();
     if (data.length <= 1) return jsonResponse({ data: [] });
     
-    const headers = data[0];
     const rows = data.slice(1);
     const result = rows.map(row => {
       let obj = {};
-      headers.forEach((h, i) => { if(h) obj[h] = row[i]; });
+      const headersToUse = (tableName === "Applications") ? DB_HEADERS : data[0];
+      headersToUse.forEach((h, i) => { if(h) obj[h] = row[i]; });
       return obj;
     });
     
@@ -260,7 +266,7 @@ function doPost(e) {
     const data = JSON.parse(rawData);
     
     const tableName = data.table || "Applications";
-    const sheet = initSheet(tableName, data);
+    const sheet = initSheet(tableName);
     
     if (data.action === "update") {
       updateApplication(sheet, data.id, data.payload || data);
@@ -277,50 +283,50 @@ function doPost(e) {
   }
 }
 
-function initSheet(sheetName, data) {
+function initSheet(sheetName) {
   let ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(sheetName);
   
-  const defaultHeaders = [
-    "id", "app_number", "applicant_type", "company_name", "manager_name", 
-    "phone", "email", "business_type", "business_reg_no", "category", 
-    "sub_service", "content", "current_status", "deadline", "reply_method", 
-    "is_urgent", "status", "admin_memo", "created_at"
-  ];
-
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
-    sheet.appendRow(sheetName === "Applications" ? defaultHeaders : ["id", "created_at"]);
+    sheet.appendRow(sheetName === "Applications" ? DB_HEADERS : ["id", "created_at"]);
   } else {
     const firstRow = sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0];
     if (!firstRow || !firstRow.join("").trim()) {
-      sheet.getRange(1, 1, 1, defaultHeaders.length).setValues([defaultHeaders]);
+      sheet.getRange(1, 1, 1, sheetName === "Applications" ? DB_HEADERS.length : 2).setValues([sheetName === "Applications" ? DB_HEADERS : ["id", "created_at"]]);
     }
   }
   return sheet;
 }
 
 function createApplication(sheet, d) {
-  const lastCol = sheet.getLastColumn();
-  if (lastCol === 0) return;
-  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
-  
   d.id = 'ID_' + new Date().getTime();
   d.created_at = d.submitted_at || new Date().toISOString();
   
-  const rowData = headers.map(h => d[h] === undefined ? '' : String(d[h]));
+  let rowData = [];
+  if (sheet.getName() === "Applications") {
+    rowData = DB_HEADERS.map(h => d[h] === undefined ? '' : String(d[h]));
+  } else {
+    // 공지사항 등 다른 테이블인 경우 첫줄(헤더)에 맞춰 동적 매핑
+    const lastCol = sheet.getLastColumn();
+    const headers = lastCol > 0 ? sheet.getRange(1, 1, 1, lastCol).getValues()[0] : ["id", "created_at"];
+    rowData = headers.map(h => d[h] === undefined ? '' : String(d[h]));
+  }
   sheet.appendRow(rowData);
 }
 
 function updateApplication(sheet, id, payload) {
   const data = sheet.getDataRange().getValues();
-  const headers = data[0];
-  const idIndex = headers.indexOf("id");
+  if (data.length <= 1) return;
+  
+  const isApp = sheet.getName() === "Applications";
+  const headersToUse = isApp ? DB_HEADERS : data[0];
+  const idIndex = isApp ? 0 : headersToUse.indexOf("id");
   if (idIndex === -1) return;
   
   for (let i = 1; i < data.length; i++) {
-    if (data[i][idIndex] === id) {
-      headers.forEach((h, colIndex) => {
+    if (String(data[i][idIndex]) === String(id)) {
+      headersToUse.forEach((h, colIndex) => {
         if (payload[h] !== undefined) {
           sheet.getRange(i + 1, colIndex + 1).setValue(payload[h]);
         }
