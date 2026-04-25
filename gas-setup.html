@@ -203,13 +203,10 @@
 
 const NOTIFY_EMAIL = 'cirrus01@naver.com';
 
-// CORS 사전 요청(OPTIONS) 허용
 function doOptions(e) {
-  return ContentService.createTextOutput("")
-    .setMimeType(ContentService.MimeType.TEXT);
+  return ContentService.createTextOutput("").setMimeType(ContentService.MimeType.TEXT);
 }
 
-// 1. GET 요청 (데이터 불러오기) - 관리자용
 function doGet(e) {
   const tableName = e.parameter.table || "Applications";
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(tableName);
@@ -222,19 +219,19 @@ function doGet(e) {
   const rows = data.slice(1);
   const result = rows.map(row => {
     let obj = {};
-    headers.forEach((header, index) => {
-      obj[header] = row[index];
-    });
+    headers.forEach((h, i) => { if(h) obj[h] = row[i]; });
     return obj;
   });
   
   return jsonResponse({ data: result });
 }
 
-// 2. POST 요청 (데이터 추가 및 수정) - 고객 및 관리자용
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
+    // 폼 데이터(x-www-form-urlencoded) 또는 텍스트/JSON 지원
+    const rawData = (e.parameter && e.parameter.data) ? e.parameter.data : e.postData.contents;
+    const data = JSON.parse(rawData);
+    
     const tableName = data.table || "Applications";
     const sheet = initSheet(tableName, data);
     
@@ -251,44 +248,42 @@ function doPost(e) {
   }
 }
 
-// 시트 자동 초기화
 function initSheet(sheetName, data) {
   let ss = SpreadsheetApp.getActiveSpreadsheet();
   let sheet = ss.getSheetByName(sheetName);
+  
+  const defaultHeaders = [
+    "id", "app_number", "applicant_type", "company_name", "manager_name", 
+    "phone", "email", "business_type", "business_reg_no", "category", 
+    "sub_service", "content", "current_status", "deadline", "reply_method", 
+    "is_urgent", "status", "admin_memo", "created_at"
+  ];
+
   if (!sheet) {
     sheet = ss.insertSheet(sheetName);
-    let headers = [];
-    if (sheetName === "Applications") {
-      headers = [
-        "id", "app_number", "applicant_type", "company_name", "manager_name", 
-        "phone", "email", "business_type", "business_reg_no", "category", 
-        "sub_service", "content", "current_status", "deadline", "reply_method", 
-        "is_urgent", "status", "admin_memo", "created_at"
-      ];
-    } else {
-      headers = ["id", "created_at"];
-      if (data) {
-        Object.keys(data).forEach(k => {
-          if (k !== 'action' && k !== 'table' && k !== 'id') headers.push(k);
-        });
-      }
+    sheet.appendRow(sheetName === "Applications" ? defaultHeaders : ["id", "created_at"]);
+  } else {
+    // 시트가 존재하지만 첫 줄(헤더)이 비어있는 경우 복구
+    const firstRow = sheet.getRange(1, 1, 1, Math.max(1, sheet.getLastColumn())).getValues()[0];
+    if (!firstRow || !firstRow.join("").trim()) {
+      sheet.getRange(1, 1, 1, defaultHeaders.length).setValues([defaultHeaders]);
     }
-    sheet.appendRow(headers);
   }
   return sheet;
 }
 
-// 새 접수 등록
 function createApplication(sheet, d) {
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const lastCol = sheet.getLastColumn();
+  if (lastCol === 0) return; // 방어 코드
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  
   d.id = 'ID_' + new Date().getTime();
   d.created_at = d.submitted_at || new Date().toISOString();
   
-  const rowData = headers.map(header => d[header] === undefined ? '' : d[header]);
+  const rowData = headers.map(h => d[h] === undefined ? '' : String(d[h]));
   sheet.appendRow(rowData);
 }
 
-// 상태 업데이트
 function updateApplication(sheet, id, payload) {
   const data = sheet.getDataRange().getValues();
   const headers = data[0];
@@ -297,9 +292,9 @@ function updateApplication(sheet, id, payload) {
   
   for (let i = 1; i < data.length; i++) {
     if (data[i][idIndex] === id) {
-      headers.forEach((header, colIndex) => {
-        if (payload[header] !== undefined) {
-          sheet.getRange(i + 1, colIndex + 1).setValue(payload[header]);
+      headers.forEach((h, colIndex) => {
+        if (payload[h] !== undefined) {
+          sheet.getRange(i + 1, colIndex + 1).setValue(payload[h]);
         }
       });
       break;
@@ -307,7 +302,6 @@ function updateApplication(sheet, id, payload) {
   }
 }
 
-// 이메일 알림 발송
 function sendNotificationEmail(d) {
   const isUrgent = (d.is_urgent === true || d.is_urgent === 'true');
   const subject = (isUrgent ? '🚨 [긴급] ' : '') + '[청솔행정사] 새 민원 접수 - ' + (d.app_number);
@@ -315,12 +309,10 @@ function sendNotificationEmail(d) {
   GmailApp.sendEmail(NOTIFY_EMAIL, subject, body);
 }
 
-// JSON 응답 함수
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-// ★ 최초 1회 실행하여 권한 승인받기 (여기서 '실행' 버튼 누르세요)
 function setupAndTest() {
   initSheet("Applications");
 }</pre>

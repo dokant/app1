@@ -39,10 +39,14 @@ const API = {
       return payload;
     }
     try {
+      const formData = new URLSearchParams();
+      formData.append('data', JSON.stringify({ action: 'create', table: table, ...payload }));
+
       await fetch(GAS_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'create', table: table, ...payload })
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
       });
       return payload;
     } catch(e) {
@@ -54,10 +58,14 @@ const API = {
   async update(table, id, payload) {
     if (!GAS_WEBHOOK_URL) return payload;
     try {
+      const formData = new URLSearchParams();
+      formData.append('data', JSON.stringify({ action: 'update', table: table, id: id, payload: payload }));
+
       await fetch(GAS_WEBHOOK_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'update', table: table, id: id, payload: payload })
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
       });
       return payload;
     } catch(e) {
